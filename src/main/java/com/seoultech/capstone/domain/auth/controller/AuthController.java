@@ -1,6 +1,7 @@
 package com.seoultech.capstone.domain.auth.controller;
 
 import com.seoultech.capstone.domain.auth.dto.LoginRequest;
+import com.seoultech.capstone.domain.auth.dto.LoginResponse;
 import com.seoultech.capstone.domain.auth.jwt.TokenResponse;
 import com.seoultech.capstone.domain.auth.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,7 +20,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public TokenResponse login(@RequestBody LoginRequest loginRequest) {
+    public LoginResponse login(@RequestBody LoginRequest loginRequest) {
         return authService.login(loginRequest);
     }
 

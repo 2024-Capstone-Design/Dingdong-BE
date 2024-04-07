@@ -144,9 +144,7 @@ public class TokenProvider implements
 
         String id = claims.get("id", String.class);
 
-        if (!checkUserTypeByUsername(id)){
-            throw new CustomException(INVALID_TOKEN, "No such member : " + id);
-        }
+        checkUserTypeByUsername(id);
 
         Collection<SimpleGrantedAuthority> authorities = Stream.of(
                         String.valueOf(claims.get(AUTHORITIES)).split(","))
@@ -158,18 +156,18 @@ public class TokenProvider implements
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
-    public Boolean checkUserTypeByUsername(String username) {
+    public String checkUserTypeByUsername(String username) {
         Optional<Teacher> teacher = teacherRepository.findByEmailAndActiveTrue(username);
         if (teacher.isPresent()) {
-            return true;
+            return "TEACHER";
         }
 
         Optional<Student> student = studentRepository.findByUsernameAndActiveTrue(username);
         if (student.isPresent()) {
-            return true;
+            return "STUDENT";
         }
 
-        return false;
+        throw new CustomException(INVALID_TOKEN, "No such member : " + username);
     }
 
 }

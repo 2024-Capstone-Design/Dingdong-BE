@@ -53,7 +53,7 @@ public class StudentService {
                     .name(studentRequest.getName())
                     .birth(studentRequest.getBirth())
                     .username(username)
-                    .password(passwordEncoder.encode(studentRequest.getBirth().toString()))
+                    .password(passwordEncoder.encode(formattedBirth))
                     .group(group)
                     .active(true)
                     .build();

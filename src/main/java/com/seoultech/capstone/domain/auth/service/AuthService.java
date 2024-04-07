@@ -1,6 +1,7 @@
 package com.seoultech.capstone.domain.auth.service;
 
 import com.seoultech.capstone.domain.auth.dto.LoginRequest;
+import com.seoultech.capstone.domain.auth.dto.LoginResponse;
 import com.seoultech.capstone.domain.auth.jwt.TokenProvider;
 import com.seoultech.capstone.domain.auth.jwt.TokenResponse;
 import com.seoultech.capstone.exception.CustomException;
@@ -32,7 +33,7 @@ public class AuthService {
     @Value("${jwt.refresh_expired-time}")
     long refreshExpired;
 
-    public TokenResponse login(LoginRequest loginRequest) throws CustomException {
+    public LoginResponse login(LoginRequest loginRequest) throws CustomException {
         try {
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
             Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
@@ -47,7 +48,10 @@ public class AuthService {
                     TimeUnit.SECONDS
             );
 
-            return tokenResponse;
+            return new LoginResponse(
+                    tokenProvider.checkUserTypeByUsername(authentication.getName()),
+                    tokenResponse.getAccessToken(), tokenResponse.getRefreshToken()
+                    );
         } catch (BadCredentialsException e) {
             throw new CustomException(INVALID_AUTHORITY, "Invalid id or password");
         }
