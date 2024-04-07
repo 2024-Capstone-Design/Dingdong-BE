@@ -8,4 +8,6 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
 
     Optional<Student> findByUsernameAndActiveTrue(String username);
 
+    boolean existsByUsername(String username);
+
 }
