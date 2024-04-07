@@ -1,7 +1,7 @@
 package com.seoultech.capstone.domain.group;
 
 import com.seoultech.capstone.domain.organization.Organization;
-import com.seoultech.capstone.domain.teacher.Teacher;
+import com.seoultech.capstone.domain.user.teacher.Teacher;
 import jakarta.persistence.*;
 import lombok.*;
 
