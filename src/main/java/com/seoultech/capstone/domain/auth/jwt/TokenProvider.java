@@ -129,6 +129,11 @@ public class TokenProvider implements
 
 
     public Authentication resolveToken(String token) {
+
+        if (StringUtils.hasText(token) && token.startsWith(BEARER_PREFIX)) {
+            token = token.substring(7);
+        }
+
         JwtParser jwtParser = Jwts
                 .parserBuilder()
                 .setSigningKey(key)

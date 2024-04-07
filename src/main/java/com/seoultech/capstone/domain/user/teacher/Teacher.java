@@ -1,5 +1,6 @@
 package com.seoultech.capstone.domain.user.teacher;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.seoultech.capstone.domain.organization.Organization;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,6 +23,7 @@ public class Teacher {
     private String email;
 
     @Column(nullable = false, length = 255)
+    @JsonIgnore
     private String password;
 
     @Column(nullable = false, length = 100)
@@ -49,5 +51,15 @@ public class Teacher {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    public TeacherResponse toTeacherResponse() {
+        TeacherResponse response = new TeacherResponse();
+        response.setId(this.id);
+        response.setName(this.name);
+        response.setPhoneNumber(this.phoneNumber);
+        response.setOrganization(this.organization);
+        response.setProfileUrl(this.profileUrl);
+        response.setLastAccessedAt(this.lastAccessedAt);
+        return response;
+    }
 }
 

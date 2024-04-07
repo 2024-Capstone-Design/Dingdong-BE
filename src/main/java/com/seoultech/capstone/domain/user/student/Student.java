@@ -1,5 +1,6 @@
 package com.seoultech.capstone.domain.user.student;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.seoultech.capstone.domain.group.Group;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,6 +24,7 @@ public class Student {
     private String username;
 
     @Column(nullable = false, length = 255)
+    @JsonIgnore
     private String password;
 
     @Column(nullable = false, length = 100)

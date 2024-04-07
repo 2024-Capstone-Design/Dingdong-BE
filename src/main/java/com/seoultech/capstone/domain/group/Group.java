@@ -1,9 +1,9 @@
 package com.seoultech.capstone.domain.group;
 
-import com.seoultech.capstone.domain.organization.Organization;
 import com.seoultech.capstone.domain.user.teacher.Teacher;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Table(name = "groups")
+@Table(name = "classes")
 public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,16 +25,13 @@ public class Group {
     private String imageUrl;
 
     @ManyToOne
-    @JoinColumn(name = "organization_id")
-    private Organization organization;
-
-    @ManyToOne
     @JoinColumn(name = "teacher_id", nullable = false)
     private Teacher teacher;
 
-    @Column(nullable = false)
+    @Column(name = "active")
     private Boolean active;
 
-    @Column(name = "created_at", nullable = false)
+    @CreationTimestamp
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 }
