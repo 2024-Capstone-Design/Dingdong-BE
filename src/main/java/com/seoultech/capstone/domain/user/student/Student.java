@@ -1,4 +1,4 @@
-package com.seoultech.capstone.domain.student;
+package com.seoultech.capstone.domain.user.student;
 
 import com.seoultech.capstone.domain.group.Group;
 import jakarta.persistence.*;

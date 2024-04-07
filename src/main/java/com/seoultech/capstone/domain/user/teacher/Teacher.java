@@ -1,4 +1,4 @@
-package com.seoultech.capstone.domain.teacher;
+package com.seoultech.capstone.domain.user.teacher;
 
 import com.seoultech.capstone.domain.organization.Organization;
 import jakarta.persistence.*;
