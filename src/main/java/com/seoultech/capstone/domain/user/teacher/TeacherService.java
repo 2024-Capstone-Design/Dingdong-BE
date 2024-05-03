@@ -1,16 +1,26 @@
 package com.seoultech.capstone.domain.user.teacher;
 
+import com.seoultech.capstone.domain.auth.dto.LoginResponse;
+import com.seoultech.capstone.domain.auth.jwt.TokenProvider;
+import com.seoultech.capstone.domain.auth.jwt.TokenResponse;
 import com.seoultech.capstone.domain.organization.OrganizationRepository;
-import com.seoultech.capstone.domain.user.student.StudentRepository;
 import com.seoultech.capstone.exception.CustomException;
+import com.seoultech.capstone.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
 
 import static com.seoultech.capstone.exception.ErrorCode.*;
 
@@ -24,7 +34,9 @@ public class TeacherService {
     long refreshExpired;
     private final OrganizationRepository organizationRepository;
     private final TeacherRepository teacherRepository;
-    private final StudentRepository studentRepository;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final TokenProvider tokenProvider;
+    private final RedisTemplate<String, String> redisTemplate;
 
     public TeacherSignupResponse teacherSignup(TeacherSignupRequest teacherSignupRequest) throws CustomException {
         try {
@@ -33,9 +45,6 @@ public class TeacherService {
 
             if (teacherRepository.findByEmailAndActiveTrue(username).isPresent()) {
                 throw new CustomException(DUPLICATED_MEMBER, "User already exists as teacher with username : " + teacherSignupRequest.getEmail());
-            }
-            if (studentRepository.findByUsernameAndActiveTrue(username).isPresent()) {
-                throw new CustomException(DUPLICATED_MEMBER, "User already exists as student with username : " + teacherSignupRequest.getEmail());
             }
 
             Teacher teacher = Teacher.builder()
@@ -54,6 +63,38 @@ public class TeacherService {
 
         } catch (DataIntegrityViolationException e) {
             throw new CustomException(SERVER_ERROR, e.getMessage());
+        }
+    }
+
+
+    public LoginResponse login(TeacherLoginRequest teacherLoginRequest) throws CustomException {
+        Teacher teacher = teacherRepository.findByEmailAndActiveTrue(
+                        teacherLoginRequest.getEmail())
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND, "No teacher found with the provided email " + teacherLoginRequest.getEmail()));
+
+        try {
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                    teacher.getId(), teacherLoginRequest.getPassword()
+            );
+            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            TokenResponse tokenResponse = tokenProvider.createToken(authentication);
+
+            redisTemplate.opsForValue().set(
+                    authentication.getName(),
+                    tokenResponse.getRefreshToken(),
+                    refreshExpired,
+                    TimeUnit.SECONDS
+            );
+
+            return new LoginResponse(
+                    "TEACHER",
+                    tokenResponse.getAccessToken(),
+                    tokenResponse.getRefreshToken()
+            );
+        } catch (BadCredentialsException e) {
+            throw new CustomException(ErrorCode.INVALID_AUTHORITY, "Invalid email or password");
         }
     }
 

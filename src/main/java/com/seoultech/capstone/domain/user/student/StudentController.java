@@ -1,5 +1,7 @@
 package com.seoultech.capstone.domain.user.student;
 
+import com.seoultech.capstone.domain.auth.dto.LoginResponse;
+import com.seoultech.capstone.domain.user.student.dto.StudentLoginRequest;
 import com.seoultech.capstone.domain.user.student.dto.StudentsSignupRequest;
 import com.seoultech.capstone.domain.user.student.dto.StudentsSignupResponse;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,10 @@ public class StudentController {
 
     private final StudentService studentService;
 
+    @PostMapping("/login")
+    public LoginResponse login(@RequestBody StudentLoginRequest studentLoginRequest) {
+        return studentService.login(studentLoginRequest);
+    }
     @PostMapping("/signup")
     public StudentsSignupResponse signupStudents(@RequestBody StudentsSignupRequest request) {
         StudentsSignupResponse response = studentService.signupStudents(request);

@@ -21,15 +21,15 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final StudentRepository studentRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<Teacher> teacher = teacherRepository.findByEmailAndActiveTrue(username);
+    public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
+        Optional<Teacher> teacher = teacherRepository.findById(Integer.valueOf(id));
         if (teacher.isPresent()) {
             return new CustomUserDetails(teacher.get());
         }
-        Optional<Student> student = studentRepository.findByUsernameAndActiveTrue(username);
+        Optional<Student> student = studentRepository.findById(Integer.valueOf(id));
         if (student.isPresent()) {
             return new CustomUserDetails(student.get());
         }
-        throw new UsernameNotFoundException("User not found with username: " + username);
+        throw new UsernameNotFoundException("User not found with username: " + id);
     }
 }
