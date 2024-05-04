@@ -1,9 +1,8 @@
 package com.seoultech.capstone.domain.user.student;
 
 import com.seoultech.capstone.domain.auth.dto.LoginResponse;
+import com.seoultech.capstone.domain.user.student.dto.PasswordResetRequest;
 import com.seoultech.capstone.domain.user.student.dto.StudentLoginRequest;
-import com.seoultech.capstone.domain.user.student.dto.StudentsSignupRequest;
-import com.seoultech.capstone.domain.user.student.dto.StudentsSignupResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,10 +23,11 @@ public class StudentController {
     public LoginResponse login(@RequestBody @Valid StudentLoginRequest studentLoginRequest) {
         return studentService.login(studentLoginRequest);
     }
-    @PostMapping("/signup")
-    public StudentsSignupResponse signupStudents(@RequestBody @Valid StudentsSignupRequest request) {
-        StudentsSignupResponse response = studentService.signupStudents(request);
-        return response;
+
+    @PostMapping("/reset-password")
+    public String resetPassword(@RequestBody PasswordResetRequest passwordResetRequest) {
+        studentService.resetPassword(passwordResetRequest);
+        return "비밀번호 변경 성공!";
     }
 
 }

@@ -5,6 +5,7 @@ import com.seoultech.capstone.domain.organization.Organization;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 
@@ -63,5 +64,10 @@ public class Teacher {
         response.setLastAccessedAt(this.lastAccessedAt);
         return response;
     }
+
+    public void updatePassword(String newPassword, PasswordEncoder passwordEncoder) {
+        this.password = passwordEncoder.encode(newPassword);
+    }
+
 }
 

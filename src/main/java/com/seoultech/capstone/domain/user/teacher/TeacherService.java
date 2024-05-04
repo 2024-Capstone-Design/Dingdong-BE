@@ -3,7 +3,15 @@ package com.seoultech.capstone.domain.user.teacher;
 import com.seoultech.capstone.domain.auth.dto.LoginResponse;
 import com.seoultech.capstone.domain.auth.jwt.TokenProvider;
 import com.seoultech.capstone.domain.auth.jwt.TokenResponse;
+import com.seoultech.capstone.domain.group.Group;
+import com.seoultech.capstone.domain.group.GroupRepository;
 import com.seoultech.capstone.domain.organization.OrganizationRepository;
+import com.seoultech.capstone.domain.user.student.Student;
+import com.seoultech.capstone.domain.user.student.StudentRepository;
+import com.seoultech.capstone.domain.user.student.dto.PasswordResetRequest;
+import com.seoultech.capstone.domain.user.student.dto.StudentRegisterResponse;
+import com.seoultech.capstone.domain.user.student.dto.StudentsRegisterResponse;
+import com.seoultech.capstone.domain.user.student.dto.StudentsRegisterRequest;
 import com.seoultech.capstone.exception.CustomException;
 import com.seoultech.capstone.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +26,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static com.seoultech.capstone.exception.ErrorCode.*;
 
@@ -37,6 +49,8 @@ public class TeacherService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final TokenProvider tokenProvider;
     private final RedisTemplate<String, String> redisTemplate;
+    private final StudentRepository studentRepository;
+    private final GroupRepository groupRepository;
 
     public TeacherSignupResponse teacherSignup(TeacherSignupRequest teacherSignupRequest) throws CustomException {
         try {
@@ -105,4 +119,53 @@ public class TeacherService {
         }
     }
 
+    public void resetPassword(PasswordResetRequest passwordResetRequest) {
+        Teacher teacher = teacherRepository.findById(passwordResetRequest.getUserId())
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND, "No teacher found with the provided id " + passwordResetRequest.getUserId()));
+
+        if (passwordEncoder.matches(passwordResetRequest.getOldPassword(), teacher.getPassword())) {
+            teacher.updatePassword(passwordResetRequest.getNewPassword(), passwordEncoder);
+            teacherRepository.save(teacher);
+        }
+        else {
+            throw new CustomException(INVALID_REQUEST, "Old password not match");
+        }
+    }
+
+
+    @Transactional
+    public StudentsRegisterResponse registerStudents(StudentsRegisterRequest request) {
+        Group group = groupRepository.findById(request.getGroupId())
+                .orElseThrow(() -> new CustomException(GROUP_NOT_FOUND, "Invalid group ID: " + request.getGroupId()));
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd");
+
+        List<StudentRegisterResponse> signupResponses = request.getStudentRegisterRequests().stream().map(studentRequest -> {
+            String formattedBirth = studentRequest.getBirth().format(formatter);
+            String baseUsername = studentRequest.getName() + "_" + formattedBirth;
+            String username = baseUsername;
+
+            // 중복 검사 및 조정
+            int suffix = 0;
+            while (studentRepository.existsByUsername(username)) {
+                suffix++;
+                username = baseUsername + (char)('a' + suffix - 1);
+            }
+
+            Student student = Student.builder()
+                    .name(studentRequest.getName())
+                    .birth(studentRequest.getBirth())
+                    .username(username)
+                    .password(passwordEncoder.encode(formattedBirth))
+                    .group(group)
+                    .active(true)
+                    .build();
+
+            student = studentRepository.save(student);
+
+            return new StudentRegisterResponse(student.getId(), student.getUsername(), student.getBirth());
+        }).collect(Collectors.toList());
+
+        return new StudentsRegisterResponse(request.getGroupId(), signupResponses);
+    }
 }

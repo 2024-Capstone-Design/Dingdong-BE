@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class StudentsSignupResponse {
+public class StudentsRegisterResponse {
     private int groupId;
-    private List<StudentSignupResponse> studentSignupResponses;
+    private List<StudentRegisterResponse> studentRegisterResponses;
 }

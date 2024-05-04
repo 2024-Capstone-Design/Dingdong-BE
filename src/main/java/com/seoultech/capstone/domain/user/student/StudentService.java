@@ -1,14 +1,11 @@
 package com.seoultech.capstone.domain.user.student;
 
 import com.seoultech.capstone.domain.auth.dto.LoginResponse;
-import com.seoultech.capstone.domain.user.student.dto.StudentLoginRequest;
+import com.seoultech.capstone.domain.user.student.dto.*;
 import com.seoultech.capstone.domain.auth.jwt.TokenProvider;
 import com.seoultech.capstone.domain.auth.jwt.TokenResponse;
 import com.seoultech.capstone.domain.group.Group;
 import com.seoultech.capstone.domain.group.GroupRepository;
-import com.seoultech.capstone.domain.user.student.dto.StudentSignupResponse;
-import com.seoultech.capstone.domain.user.student.dto.StudentsSignupRequest;
-import com.seoultech.capstone.domain.user.student.dto.StudentsSignupResponse;
 import com.seoultech.capstone.exception.CustomException;
 import com.seoultech.capstone.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -40,47 +37,10 @@ public class StudentService {
     @Value("${jwt.refresh_expired-time}")
     long refreshExpired;
     private final StudentRepository studentRepository;
-    private final GroupRepository groupRepository;
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final TokenProvider tokenProvider;
     private final RedisTemplate<String, String> redisTemplate;
-
-    @Transactional
-    public StudentsSignupResponse signupStudents(StudentsSignupRequest request) {
-        Group group = groupRepository.findById(request.getGroupId())
-                .orElseThrow(() -> new CustomException(GROUP_NOT_FOUND, "Invalid group ID: " + request.getGroupId()));
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd");
-
-        List<StudentSignupResponse> signupResponses = request.getStudentSignupRequests().stream().map(studentRequest -> {
-            String formattedBirth = studentRequest.getBirth().format(formatter);
-            String baseUsername = studentRequest.getName() + "_" + formattedBirth;
-            String username = baseUsername;
-
-            // 중복 검사 및 조정
-            int suffix = 0;
-            while (studentRepository.existsByUsername(username)) {
-                suffix++;
-                username = baseUsername + (char)('a' + suffix - 1);
-            }
-
-            Student student = Student.builder()
-                    .name(studentRequest.getName())
-                    .birth(studentRequest.getBirth())
-                    .username(username)
-                    .password(passwordEncoder.encode(formattedBirth))
-                    .group(group)
-                    .active(true)
-                    .build();
-
-            student = studentRepository.save(student);
-
-            return new StudentSignupResponse(student.getId(), student.getUsername(), student.getBirth());
-        }).collect(Collectors.toList());
-
-        return new StudentsSignupResponse(request.getGroupId(), signupResponses);
-    }
 
     @Transactional
     public LoginResponse login(StudentLoginRequest studentLoginRequest) throws CustomException {
@@ -111,6 +71,19 @@ public class StudentService {
             );
         } catch (BadCredentialsException e) {
             throw new CustomException(ErrorCode.INVALID_AUTHORITY, "Invalid username or password");
+        }
+    }
+
+    public void resetPassword(PasswordResetRequest passwordResetRequest) {
+        Student student = studentRepository.findById(passwordResetRequest.getUserId())
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND, "No student found with the provided id " +passwordResetRequest.getUserId() ));
+
+        if (passwordEncoder.matches(passwordResetRequest.getOldPassword(), student.getPassword())) {
+            student.updatePassword(passwordResetRequest.getNewPassword(), passwordEncoder);
+            studentRepository.save(student);
+        }
+        else {
+            throw new CustomException(INVALID_REQUEST, "Old password not match");
         }
     }
 }

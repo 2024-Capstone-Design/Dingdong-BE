@@ -27,7 +27,7 @@ public enum ErrorCode {
     //404 Not Found
     MEMBER_NOT_FOUND(NOT_FOUND, "User is not founded"),
     ORGAN_NOT_FOUND(NOT_FOUND, "Organization is not founded"),
-    GROUP_NOT_FOUND(NOT_FOUND, "Organization is not founded"),
+    GROUP_NOT_FOUND(NOT_FOUND, "Group is not founded"),
 
 
     //409 CONFLICT

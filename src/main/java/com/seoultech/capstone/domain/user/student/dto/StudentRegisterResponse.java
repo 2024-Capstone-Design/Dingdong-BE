@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class StudentSignupResponse {
+public class StudentRegisterResponse {
     private Integer id;
     private String username;
     private LocalDate birth;
