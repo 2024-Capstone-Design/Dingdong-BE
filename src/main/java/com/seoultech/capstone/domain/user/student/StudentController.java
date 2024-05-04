@@ -4,6 +4,7 @@ import com.seoultech.capstone.domain.auth.dto.LoginResponse;
 import com.seoultech.capstone.domain.user.student.dto.StudentLoginRequest;
 import com.seoultech.capstone.domain.user.student.dto.StudentsSignupRequest;
 import com.seoultech.capstone.domain.user.student.dto.StudentsSignupResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,11 +21,11 @@ public class StudentController {
     private final StudentService studentService;
 
     @PostMapping("/login")
-    public LoginResponse login(@RequestBody StudentLoginRequest studentLoginRequest) {
+    public LoginResponse login(@RequestBody @Valid StudentLoginRequest studentLoginRequest) {
         return studentService.login(studentLoginRequest);
     }
     @PostMapping("/signup")
-    public StudentsSignupResponse signupStudents(@RequestBody StudentsSignupRequest request) {
+    public StudentsSignupResponse signupStudents(@RequestBody @Valid StudentsSignupRequest request) {
         StudentsSignupResponse response = studentService.signupStudents(request);
         return response;
     }

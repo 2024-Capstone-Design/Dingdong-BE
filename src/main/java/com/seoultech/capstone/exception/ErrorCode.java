@@ -13,6 +13,7 @@ public enum ErrorCode {
 
     //400 Bad Request: 클라이언트의 요청이 잘못되어 서버가 요청을 이해할 수 없음
     MISMATCH_INFO(BAD_REQUEST, "There is no data related to request"),
+    INVALID_REQUEST(BAD_REQUEST, "Wrong request provided"),
 
 
     //401 Unauthorized: 인증되지 않은 사용자가 보호된 페이지에 접근하려고 할 때 사용

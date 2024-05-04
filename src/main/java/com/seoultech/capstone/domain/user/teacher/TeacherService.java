@@ -47,19 +47,26 @@ public class TeacherService {
                 throw new CustomException(DUPLICATED_MEMBER, "User already exists as teacher with username : " + teacherSignupRequest.getEmail());
             }
 
+            String phoneNumber = teacherSignupRequest.getPhoneNumber();
+            String lastFourDigits = phoneNumber.substring(phoneNumber.length() - 4);
+
             Teacher teacher = Teacher.builder()
                     .email(teacherSignupRequest.getEmail())
-                    .password(passwordEncoder.encode(teacherSignupRequest.getPassword()))
+                    .password(passwordEncoder.encode(lastFourDigits))
+                    .phoneNumber(teacherSignupRequest.getPhoneNumber())
                     .active(true)
                     .createdAt(LocalDateTime.now())
                     .name(teacherSignupRequest.getName())
                     .organization(organizationRepository.findById(teacherSignupRequest.getOrganizationId())
                             .orElseThrow(() -> new CustomException(ORGAN_NOT_FOUND, "No such organization")))
+                    .serviceUsage(teacherSignupRequest.getServiceUsage())
                     .build();
 
             Teacher newTeacher = teacherRepository.save(teacher);
 
             return new TeacherSignupResponse(newTeacher.getId(), newTeacher.getEmail(), newTeacher.getName(), newTeacher.getOrganization());
+
+
 
         } catch (DataIntegrityViolationException e) {
             throw new CustomException(SERVER_ERROR, e.getMessage());
