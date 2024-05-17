@@ -25,9 +25,7 @@ public enum ErrorCode {
     LIMIT_REQUEST(FORBIDDEN, "The request is limited"),
 
     //404 Not Found
-    MEMBER_NOT_FOUND(NOT_FOUND, "User is not founded"),
-    ORGAN_NOT_FOUND(NOT_FOUND, "Organization is not founded"),
-    GROUP_NOT_FOUND(NOT_FOUND, "Group is not founded"),
+    ENTITY_NOT_FOUND(NOT_FOUND, "Entity is not founded"),
 
 
     //409 CONFLICT

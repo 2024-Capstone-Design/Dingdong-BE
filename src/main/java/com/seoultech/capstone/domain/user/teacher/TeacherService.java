@@ -72,7 +72,7 @@ public class TeacherService {
                     .createdAt(LocalDateTime.now())
                     .name(teacherSignupRequest.getName())
                     .organization(organizationRepository.findById(teacherSignupRequest.getOrganizationId())
-                            .orElseThrow(() -> new CustomException(ORGAN_NOT_FOUND, "No such organization")))
+                            .orElseThrow(() -> new CustomException(ENTITY_NOT_FOUND, "No such organization with id "+ teacherSignupRequest.getOrganizationId())))
                     .serviceUsage(teacherSignupRequest.getServiceUsage())
                     .build();
 
@@ -91,7 +91,7 @@ public class TeacherService {
     public LoginResponse login(TeacherLoginRequest teacherLoginRequest) throws CustomException {
         Teacher teacher = teacherRepository.findByEmailAndActiveTrue(
                         teacherLoginRequest.getEmail())
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND, "No teacher found with the provided email " + teacherLoginRequest.getEmail()));
+                .orElseThrow(() -> new CustomException(ENTITY_NOT_FOUND, "No such teacher with email " + teacherLoginRequest.getEmail()));
 
         try {
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
@@ -121,7 +121,7 @@ public class TeacherService {
 
     public void resetPassword(PasswordResetRequest passwordResetRequest) {
         Teacher teacher = teacherRepository.findById(passwordResetRequest.getUserId())
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND, "No teacher found with the provided id " + passwordResetRequest.getUserId()));
+                .orElseThrow(() -> new CustomException(ENTITY_NOT_FOUND, "No such teacher with id " + passwordResetRequest.getUserId()));
 
         if (passwordEncoder.matches(passwordResetRequest.getOldPassword(), teacher.getPassword())) {
             teacher.updatePassword(passwordResetRequest.getNewPassword(), passwordEncoder);
@@ -136,7 +136,7 @@ public class TeacherService {
     @Transactional
     public StudentsRegisterResponse registerStudents(StudentsRegisterRequest request) {
         Group group = groupRepository.findById(request.getGroupId())
-                .orElseThrow(() -> new CustomException(GROUP_NOT_FOUND, "Invalid group ID: " + request.getGroupId()));
+                .orElseThrow(() -> new CustomException(ENTITY_NOT_FOUND, "Invalid group ID: " + request.getGroupId()));
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd");
 

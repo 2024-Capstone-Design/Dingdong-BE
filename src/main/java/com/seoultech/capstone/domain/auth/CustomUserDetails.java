@@ -17,13 +17,13 @@ public class CustomUserDetails implements UserDetails {
     public CustomUserDetails(Student student) {
         this.username = student.getUsername();
         this.password = student.getPassword();
-        this.authorities = Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"));
+        this.authorities = Arrays.asList(new SimpleGrantedAuthority("ROLE_STUDENT"));
     }
 
     public CustomUserDetails(Teacher teacher) {
         this.username = teacher.getEmail();
         this.password = teacher.getPassword();
-        this.authorities = Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"));
+        this.authorities = Arrays.asList(new SimpleGrantedAuthority("ROLE_TEACHER"));
     }
 
     @Override

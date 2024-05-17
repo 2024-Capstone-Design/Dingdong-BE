@@ -4,8 +4,6 @@ import com.seoultech.capstone.domain.auth.dto.LoginResponse;
 import com.seoultech.capstone.domain.user.student.dto.*;
 import com.seoultech.capstone.domain.auth.jwt.TokenProvider;
 import com.seoultech.capstone.domain.auth.jwt.TokenResponse;
-import com.seoultech.capstone.domain.group.Group;
-import com.seoultech.capstone.domain.group.GroupRepository;
 import com.seoultech.capstone.exception.CustomException;
 import com.seoultech.capstone.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import static com.seoultech.capstone.exception.ErrorCode.*;
 
@@ -46,7 +41,7 @@ public class StudentService {
     public LoginResponse login(StudentLoginRequest studentLoginRequest) throws CustomException {
         Student student = studentRepository.findByUsernameAndGroupIdAndActiveTrue(
                         studentLoginRequest.getUsername(), studentLoginRequest.getGroupId())
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND, "No student found with the provided username " +studentLoginRequest.getUsername() + " and group ID " + studentLoginRequest.getGroupId()));
+                .orElseThrow(() -> new CustomException(ENTITY_NOT_FOUND, "No such student with username " +studentLoginRequest.getUsername() + " and group ID " + studentLoginRequest.getGroupId()));
 
         try {
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
@@ -76,7 +71,7 @@ public class StudentService {
 
     public void resetPassword(PasswordResetRequest passwordResetRequest) {
         Student student = studentRepository.findById(passwordResetRequest.getUserId())
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND, "No student found with the provided id " +passwordResetRequest.getUserId() ));
+                .orElseThrow(() -> new CustomException(ENTITY_NOT_FOUND, "No such student with id " +passwordResetRequest.getUserId() ));
 
         if (passwordEncoder.matches(passwordResetRequest.getOldPassword(), student.getPassword())) {
             student.updatePassword(passwordResetRequest.getNewPassword(), passwordEncoder);

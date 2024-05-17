@@ -19,7 +19,7 @@ public class GroupService {
     public GroupResponse createGroup(GroupRequest groupRequest) {
 
         Teacher teacher = teacherRepository.findById(groupRequest.getTeacherId())
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND, "No such teacher"));
+                .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND, "No such teacher"));
 
         Group newGroup = groupRepository.save(
                 Group.builder()
