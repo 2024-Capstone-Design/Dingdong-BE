@@ -4,9 +4,8 @@ import com.seoultech.capstone.domain.user.teacher.Teacher;
 import com.seoultech.capstone.domain.user.teacher.TeacherRepository;
 import com.seoultech.capstone.exception.CustomException;
 import com.seoultech.capstone.exception.ErrorCode;
+import com.seoultech.capstone.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,16 +16,10 @@ public class FairytaleService {
     private final TeacherRepository teacherRepository;
 
     public FairytaleResponse addFairytale(FairytaleRequest fairytaleRequestDTO) {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username;
-        if (principal instanceof UserDetails) {
-            username = ((UserDetails) principal).getUsername();
-        } else {
-            username = principal.toString();
-        }
+        final int id = SecurityUtil.getCurrentUserId();
 
-        Teacher teacher = teacherRepository.findByEmailAndActiveTrue(username)
-                .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND, "No teacher found with the provided email " + username));
+        Teacher teacher = teacherRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND, "No such teacher with id " + id));
 
         Fairytale fairytale = Fairytale.builder()
                 .title(fairytaleRequestDTO.getTitle())

@@ -55,9 +55,9 @@ public class TeacherService {
     public TeacherSignupResponse teacherSignup(TeacherSignupRequest teacherSignupRequest) throws CustomException {
         try {
 
-            String username = teacherSignupRequest.getEmail();
+            String email = teacherSignupRequest.getEmail();
 
-            if (teacherRepository.findByEmailAndActiveTrue(username).isPresent()) {
+            if (teacherRepository.findByEmailAndActiveTrue(email).isPresent()) {
                 throw new CustomException(DUPLICATED_MEMBER, "User already exists as teacher with username : " + teacherSignupRequest.getEmail());
             }
 

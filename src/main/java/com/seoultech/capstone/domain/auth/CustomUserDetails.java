@@ -15,13 +15,13 @@ public class CustomUserDetails implements UserDetails {
     private Collection<? extends GrantedAuthority> authorities;
 
     public CustomUserDetails(Student student) {
-        this.username = student.getUsername();
+        this.username = String.valueOf(student.getId());
         this.password = student.getPassword();
         this.authorities = Arrays.asList(new SimpleGrantedAuthority("ROLE_STUDENT"));
     }
 
     public CustomUserDetails(Teacher teacher) {
-        this.username = teacher.getEmail();
+        this.username = String.valueOf(teacher.getId());
         this.password = teacher.getPassword();
         this.authorities = Arrays.asList(new SimpleGrantedAuthority("ROLE_TEACHER"));
     }
