@@ -33,6 +33,9 @@ public class Fairytale {
     @Column(name = "content", nullable = false)
     private String content;
 
+    @Column(name = "image_url", nullable = true)
+    private String imageUrl;
+
     @ManyToOne
     @JoinColumn(name = "teacher_id", nullable = false)
     private Teacher teacher;
@@ -59,6 +62,7 @@ public class Fairytale {
                 .characters(this.characters)
                 .content(this.content)
                 .teacherName(this.teacher.getName())
+                .imageUrl(this.imageUrl)
                 .createdAt(this.createdAt)
                 .build();
     }

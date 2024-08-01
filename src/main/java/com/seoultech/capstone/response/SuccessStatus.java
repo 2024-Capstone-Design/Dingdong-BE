@@ -28,6 +28,7 @@ public enum SuccessStatus {
      * 반
      */
     GROUP_CREATE_SUCCESS(HttpStatus.CREATED, "그룹 생성 성공"),
+    GROUP_LIST_RETRIEVAL_SUCCESS(HttpStatus.OK, "그룹 리스트 조회 성공"),
 
     /**
      * 조직
@@ -38,6 +39,8 @@ public enum SuccessStatus {
      * 동화
      */
     FAIRYTALE_ADD_SUCCESS(HttpStatus.CREATED, "동화 추가 성공"),
+    FAIRYTALE_LIST_RETRIEVAL_SUCCESS(HttpStatus.OK, "동화 리스트 조회 성공"),
+    FAIRYTALE_RETRIEVAL_SUCCESS(HttpStatus.OK, "동화 조회 성공"),
 
     /**
      * 학생 관련
@@ -46,6 +49,9 @@ public enum SuccessStatus {
     PASSWORD_RESET_SUCCESS(HttpStatus.OK, "비밀번호 변경 성공"),
     SIGNUP_SUCCESS(HttpStatus.CREATED, "회원가입 성공"),
     STUDENTS_REGISTER_SUCCESS(HttpStatus.OK, "학생 등록 성공"),
+
+    STUDENT_TASK_PROGRESS_ADD_SUCCESS(HttpStatus.CREATED, "학생 과제 진행 상태 생성 성공"),
+    STUDENT_TASK_PROGRESS_UPDATE_SUCCESS(HttpStatus.OK, "학생 과제 진행 상태 업데이트 성공"),
 
     /**
      * 과제 관련

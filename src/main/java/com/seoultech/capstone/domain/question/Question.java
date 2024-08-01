@@ -15,9 +15,12 @@ public class Question {
     private int id;
 
     @Column(name = "question_type", nullable = false)
-    private String questionType;
+    private String type;
 
     @Column(nullable = false)
     private String prompt;
+
+    @Column(name = "output", nullable = false)
+    private String output;
 }
 

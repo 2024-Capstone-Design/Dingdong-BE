@@ -12,6 +12,9 @@ import com.seoultech.capstone.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class FairytaleService {
@@ -36,5 +39,17 @@ public class FairytaleService {
         Fairytale savedFairytale = fairytaleRepository.save(fairytale);
 
         return savedFairytale.toResponse();
+    }
+
+    public List<FairytaleResponse> getAllFairytales() {
+        return fairytaleRepository.findAll().stream()
+                .map(Fairytale::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    public FairytaleResponse getFairytaleById(Integer id) {
+        Fairytale fairytale = fairytaleRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorStatus.ENTITY_NOT_FOUND, "No such fairytale with id " + id));
+        return fairytale.toResponse();
     }
 }

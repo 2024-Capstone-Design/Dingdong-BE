@@ -27,6 +27,9 @@ public class FairytaleResponse {
     @Schema(description = "동화 내용", example = "한 소녀가...")
     private String content;
 
+    @Schema(description = "동화 이미지 URL", example = "http://example.com/image.jpg")
+    private String imageUrl;
+
     @Schema(description = "선생님 이름", example = "홍길동")
     private String teacherName;
 
@@ -34,12 +37,13 @@ public class FairytaleResponse {
     private LocalDateTime createdAt;
 
     @Builder
-    public FairytaleResponse(Integer id, String title, String background, String characters, String content, String teacherName, LocalDateTime createdAt) {
+    public FairytaleResponse(Integer id, String title, String background, String characters, String content,  String imageUrl, String teacherName, LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
         this.background = background;
         this.characters = characters;
         this.content = content;
+        this.imageUrl = imageUrl;
         this.teacherName = teacherName;
         this.createdAt = createdAt;
     }

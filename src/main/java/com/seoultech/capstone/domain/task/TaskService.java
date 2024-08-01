@@ -6,9 +6,7 @@ import com.seoultech.capstone.domain.group.Group;
 import com.seoultech.capstone.domain.group.GroupRepository;
 import com.seoultech.capstone.domain.question.Question;
 import com.seoultech.capstone.domain.question.QuestionRepository;
-import com.seoultech.capstone.domain.studentTaskProgress.StudentTaskProgress;
 import com.seoultech.capstone.domain.studentTaskProgress.StudentTaskProgressRepository;
-import com.seoultech.capstone.domain.studentTaskProgress.StudentTaskResponse;
 import com.seoultech.capstone.domain.user.student.Student;
 import com.seoultech.capstone.domain.user.student.StudentRepository;
 import com.seoultech.capstone.domain.user.teacher.Teacher;
@@ -84,32 +82,4 @@ public class TaskService {
                 .map(Task::toResponse)
                 .collect(Collectors.toList());
     }
-
-    public List<StudentTaskResponse> getProgressedTasksByStudentId(Integer studentId) {
-        List<StudentTaskProgress> studentTaskProgresses = studentTaskProgressRepository.findByStudentId(studentId);
-        return studentTaskProgresses.stream()
-                .map(this::convertToStudentTaskResponse)
-                .collect(Collectors.toList());
-    }
-
-    private StudentTaskResponse convertToStudentTaskResponse(StudentTaskProgress studentTaskProgress) {
-        Task task = studentTaskProgress.getTask();
-        return StudentTaskResponse.builder()
-                .taskId(task.getId())
-                .fairytaleId(task.getFairytale().getId())
-                .targetClassId(task.getTargetClass().getId())
-                .teacherId(task.getTeacher().getId())
-                .title(task.getTitle())
-                .summary(task.getSummary())
-                .startDate(task.getStartDate())
-                .finishDate(task.getFinishDate())
-                .questionId(task.getQuestion().getId())
-                .createdAt(task.getCreatedAt())
-                .studentId(studentTaskProgress.getStudent().getId())
-                .completed(studentTaskProgress.getCompleted())
-                .completionDate(studentTaskProgress.getCompletionDate())
-                .baseImgUrl(studentTaskProgress.getBaseImgUrl())
-                .build();
-    }
-
 }

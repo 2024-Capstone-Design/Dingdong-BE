@@ -1,5 +1,6 @@
 package com.seoultech.capstone.domain.group;
 
+import com.seoultech.capstone.common.ListWrapper;
 import com.seoultech.capstone.response.ApiResponseDTO;
 import com.seoultech.capstone.response.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "그룹 관리 API", description = "그룹과 관련된 API")
 @Slf4j
@@ -27,5 +30,13 @@ public class GroupController {
     public ResponseEntity<ApiResponseDTO<GroupResponse>> createGroup(@RequestBody GroupRequest groupRequest) {
         GroupResponse createdGroup = groupService.createGroup(groupRequest);
         return ApiResponseDTO.success(SuccessStatus.GROUP_CREATE_SUCCESS, createdGroup);
+    }
+
+    @Operation(summary = "교사별 그룹 조회", description = "교사 ID로 관련된 모든 그룹을 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "그룹 조회 성공", content = @Content(schema = @Schema(implementation = ApiResponseDTO.class)))
+    @GetMapping("/teacher/{teacherId}")
+    public ResponseEntity<ApiResponseDTO<ListWrapper<GroupResponse>>> getGroupsByTeacherId(@PathVariable Integer teacherId) {
+        List<GroupResponse> groups = groupService.getGroupsByTeacherId(teacherId);
+        return ApiResponseDTO.success(SuccessStatus.GROUP_LIST_RETRIEVAL_SUCCESS, new ListWrapper<>(groups));
     }
 }

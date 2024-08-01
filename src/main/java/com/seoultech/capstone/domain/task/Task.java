@@ -69,15 +69,20 @@ public class Task {
 
     public TaskResponse toResponse() {
         return TaskResponse.builder()
-                .id(this.id)
+                .taskId(this.id)
+                .taskTitle(this.title)
+                .taskSummary(this.summary)
                 .fairytaleId(this.fairytale.getId())
+                .fairytaleTitle(this.fairytale.getTitle())
+                .fairytaleImageUrl(this.fairytale.getImageUrl())
                 .targetClassId(this.targetClass.getId())
-                .teacherId(this.teacher.getId())
-                .title(this.title)
-                .summary(this.summary)
+                .targetClassName(this.targetClass.getName())
                 .startDate(this.startDate)
                 .finishDate(this.finishDate)
                 .questionId(this.question.getId())
+                .questionType(this.question.getType())
+                .questionPrompt(this.question.getPrompt())
+                .questionOutput(this.question.getOutput())
                 .createdAt(this.createdAt)
                 .build();
     }
