@@ -12,6 +12,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,9 +41,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/auth/health-check",
-                                "/teacher/signup", "/teacher/login",
-                                "/student/signup","/student/login",
+                                "/api/v1/auth/health-check",
+                                "/api/v1/teacher/signup", "/api/v1/teacher/login",
+                                "/api/v1/student/signup","/api/v1/student/login",
                                 "/error").permitAll()
                         .requestMatchers("/main").permitAll()
                         .anyRequest().authenticated()
@@ -52,7 +53,7 @@ public class SecurityConfig {
                 .sessionManagement(config -> config
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new RefreshFilter(tokenProvider, redisTemplate), JwtFilter.class) // JwtFilter 다음에 RefreshFilter를 추가
+                .addFilterBefore(new RefreshFilter(tokenProvider, redisTemplate), JwtFilter.class)
                 .addFilterBefore(new GlobalExceptionHandlerFilter(), RefreshFilter.class);
 
 
@@ -74,6 +75,12 @@ public class SecurityConfig {
         return source;
     }
 
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring()
+                .requestMatchers("/error", "/favicon.ico", "/swagger-ui/**", "/api-docs/**");
+
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

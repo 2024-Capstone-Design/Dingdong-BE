@@ -1,7 +1,7 @@
 package com.seoultech.capstone.util;
 
 import com.seoultech.capstone.exception.CustomException;
-import com.seoultech.capstone.exception.ErrorCode;
+import com.seoultech.capstone.response.ErrorStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +18,6 @@ public class SecurityUtil {
                 return Integer.parseInt(principal.toString());
             }
         }
-        throw new CustomException(ErrorCode.INVALID_REQUEST, "Security Context에서 인증 정보를 찾을 수 없습니다.");
+        throw new CustomException(ErrorStatus.INVALID_REQUEST, "Security Context에서 인증 정보를 찾을 수 없습니다.");
     }
 }

@@ -1,5 +1,6 @@
-package com.seoultech.capstone.domain.fairytale;
+package com.seoultech.capstone.domain.fairytale.domain;
 
+import com.seoultech.capstone.domain.fairytale.dto.FairytaleResponse;
 import com.seoultech.capstone.domain.user.teacher.Teacher;
 import jakarta.persistence.*;
 import lombok.Builder;

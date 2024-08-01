@@ -3,7 +3,7 @@ package com.seoultech.capstone.domain.group;
 import com.seoultech.capstone.domain.user.teacher.Teacher;
 import com.seoultech.capstone.domain.user.teacher.TeacherRepository;
 import com.seoultech.capstone.exception.CustomException;
-import com.seoultech.capstone.exception.ErrorCode;
+import com.seoultech.capstone.response.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ public class GroupService {
     public GroupResponse createGroup(GroupRequest groupRequest) {
 
         Teacher teacher = teacherRepository.findById(groupRequest.getTeacherId())
-                .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND, "No such teacher"));
+                .orElseThrow(() -> new CustomException(ErrorStatus.ENTITY_NOT_FOUND, "No such teacher with id " + groupRequest.getTeacherId()));
 
         Group newGroup = groupRepository.save(
                 Group.builder()

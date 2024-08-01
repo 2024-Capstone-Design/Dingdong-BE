@@ -3,15 +3,18 @@ package com.seoultech.capstone.exception;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.seoultech.capstone.response.ApiResponseDTO;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -24,11 +27,13 @@ public class GlobalExceptionHandlerFilter extends OncePerRequestFilter {
         } catch (CustomException e) {
 
             ObjectMapper objectMapper = new ObjectMapper();
-
             objectMapper.registerModule(new JavaTimeModule());
             objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-            var errorResponse = ErrorResponse.toResponseEntity(e.getErrorCode(), e.getValue()).getBody();
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+
+            var errorResponse = ApiResponseDTO.fail(e.getErrorStatus(), e.getMessage()).getBody();
 
             try {
                 String json = objectMapper.writeValueAsString(errorResponse);

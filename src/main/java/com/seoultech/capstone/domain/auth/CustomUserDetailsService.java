@@ -4,8 +4,6 @@ import com.seoultech.capstone.domain.user.student.Student;
 import com.seoultech.capstone.domain.user.student.StudentRepository;
 import com.seoultech.capstone.domain.user.teacher.Teacher;
 import com.seoultech.capstone.domain.user.teacher.TeacherRepository;
-import com.seoultech.capstone.exception.CustomException;
-import com.seoultech.capstone.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

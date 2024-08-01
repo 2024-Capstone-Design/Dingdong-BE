@@ -6,24 +6,22 @@ import com.seoultech.capstone.domain.auth.jwt.TokenResponse;
 import com.seoultech.capstone.domain.group.Group;
 import com.seoultech.capstone.domain.group.GroupRepository;
 import com.seoultech.capstone.domain.organization.OrganizationRepository;
+import com.seoultech.capstone.domain.organization.OrganizationResponse;
 import com.seoultech.capstone.domain.user.student.Student;
 import com.seoultech.capstone.domain.user.student.StudentRepository;
-import com.seoultech.capstone.domain.user.student.dto.PasswordResetRequest;
-import com.seoultech.capstone.domain.user.student.dto.StudentRegisterResponse;
-import com.seoultech.capstone.domain.user.student.dto.StudentsRegisterResponse;
-import com.seoultech.capstone.domain.user.student.dto.StudentsRegisterRequest;
+import com.seoultech.capstone.domain.user.student.StudentService;
+import com.seoultech.capstone.domain.user.student.dto.*;
+import com.seoultech.capstone.domain.user.teacher.dto.TeacherSignupRequest;
+import com.seoultech.capstone.domain.user.teacher.dto.TeacherSignupResponse;
 import com.seoultech.capstone.exception.CustomException;
-import com.seoultech.capstone.exception.ErrorCode;
+import com.seoultech.capstone.response.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,10 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static com.seoultech.capstone.exception.ErrorCode.*;
+import static com.seoultech.capstone.response.ErrorStatus.*;
 
 @Slf4j
 @Service
@@ -78,7 +75,16 @@ public class TeacherService {
 
             Teacher newTeacher = teacherRepository.save(teacher);
 
-            return new TeacherSignupResponse(newTeacher.getId(), newTeacher.getEmail(), newTeacher.getName(), newTeacher.getOrganization());
+            OrganizationResponse organizationResponse = new OrganizationResponse(
+                    newTeacher.getOrganization().getId(),
+                    newTeacher.getOrganization().getName(),
+                    newTeacher.getOrganization().getRegisteredAt(),
+                    newTeacher.getOrganization().getType(),
+                    newTeacher.getOrganization().getContactInfo(),
+                    newTeacher.getOrganization().getAdminInfo()
+            );
+
+            return new TeacherSignupResponse(newTeacher.getId(), newTeacher.getEmail(), newTeacher.getName(), organizationResponse);
 
 
 
@@ -94,20 +100,7 @@ public class TeacherService {
                 .orElseThrow(() -> new CustomException(ENTITY_NOT_FOUND, "No such teacher with email " + teacherLoginRequest.getEmail()));
 
         try {
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                    teacher.getId(), teacherLoginRequest.getPassword()
-            );
-            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            TokenResponse tokenResponse = tokenProvider.createToken(authentication);
-
-            redisTemplate.opsForValue().set(
-                    authentication.getName(),
-                    tokenResponse.getRefreshToken(),
-                    refreshExpired,
-                    TimeUnit.SECONDS
-            );
+            TokenResponse tokenResponse = StudentService.getAuthentication(teacher.getId(), teacherLoginRequest.getPassword(), authenticationManagerBuilder, tokenProvider, redisTemplate, refreshExpired);
 
             return new LoginResponse(
                     "TEACHER",
@@ -115,9 +108,10 @@ public class TeacherService {
                     tokenResponse.getRefreshToken()
             );
         } catch (BadCredentialsException e) {
-            throw new CustomException(ErrorCode.INVALID_AUTHORITY, "Invalid email or password");
+            throw new CustomException(ErrorStatus.UNAUTHORIZED_INFO, "Invalid email or password");
         }
     }
+
 
     public void resetPassword(PasswordResetRequest passwordResetRequest) {
         Teacher teacher = teacherRepository.findById(passwordResetRequest.getUserId())
@@ -128,7 +122,7 @@ public class TeacherService {
             teacherRepository.save(teacher);
         }
         else {
-            throw new CustomException(INVALID_REQUEST, "Old password not match");
+            throw new CustomException(UNAUTHORIZED_INFO, "Old password not match");
         }
     }
 

@@ -1,8 +1,6 @@
 package com.seoultech.capstone.domain.auth.jwt;
 
-import com.seoultech.capstone.domain.user.student.Student;
 import com.seoultech.capstone.domain.user.student.StudentRepository;
-import com.seoultech.capstone.domain.user.teacher.Teacher;
 import com.seoultech.capstone.domain.user.teacher.TeacherRepository;
 import com.seoultech.capstone.exception.CustomException;
 import io.jsonwebtoken.*;
@@ -29,7 +27,7 @@ import java.util.Date;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.seoultech.capstone.exception.ErrorCode.INVALID_TOKEN;
+import static com.seoultech.capstone.response.ErrorStatus.INVALID_TOKEN;
 
 @Component
 @Slf4j

@@ -1,7 +1,8 @@
 package com.seoultech.capstone.domain.auth.jwt;
 
 import com.seoultech.capstone.exception.CustomException;
-import com.seoultech.capstone.exception.ErrorCode;
+import com.seoultech.capstone.response.ErrorStatus;
+import io.netty.channel.unix.Errors;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.AuthenticationException;
@@ -16,7 +17,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
-        throw new CustomException(ErrorCode.INVALID_TOKEN, "JwtAuthenticationEntryPoint: no valid credentials");
+        throw new CustomException(ErrorStatus.INVALID_TOKEN, "JwtAuthenticationEntryPoint: no valid credentials");
 
     }
 }

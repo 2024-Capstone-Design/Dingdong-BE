@@ -5,7 +5,7 @@ import com.seoultech.capstone.domain.user.student.dto.*;
 import com.seoultech.capstone.domain.auth.jwt.TokenProvider;
 import com.seoultech.capstone.domain.auth.jwt.TokenResponse;
 import com.seoultech.capstone.exception.CustomException;
-import com.seoultech.capstone.exception.ErrorCode;
+import com.seoultech.capstone.response.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.concurrent.TimeUnit;
 
-import static com.seoultech.capstone.exception.ErrorCode.*;
+import static com.seoultech.capstone.response.ErrorStatus.*;
 
 @Slf4j
 @Service
@@ -41,23 +41,10 @@ public class StudentService {
     public LoginResponse login(StudentLoginRequest studentLoginRequest) throws CustomException {
         Student student = studentRepository.findByUsernameAndGroupIdAndActiveTrue(
                         studentLoginRequest.getUsername(), studentLoginRequest.getGroupId())
-                .orElseThrow(() -> new CustomException(ENTITY_NOT_FOUND, "No such student with username " +studentLoginRequest.getUsername() + " and group ID " + studentLoginRequest.getGroupId()));
+                .orElseThrow(() -> new CustomException(UNAUTHORIZED_INFO, "No such student with username " +studentLoginRequest.getUsername() + " and group ID " + studentLoginRequest.getGroupId()));
 
         try {
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                    student.getId(), studentLoginRequest.getPassword()
-            );
-            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            TokenResponse tokenResponse = tokenProvider.createToken(authentication);
-
-            redisTemplate.opsForValue().set(
-                    authentication.getName(),
-                    tokenResponse.getRefreshToken(),
-                    refreshExpired,
-                    TimeUnit.SECONDS
-            );
+            TokenResponse tokenResponse = getAuthentication(student.getId(), studentLoginRequest.getPassword(), authenticationManagerBuilder, tokenProvider, redisTemplate, refreshExpired);
 
             return new LoginResponse(
                     "STUDENT",
@@ -65,20 +52,39 @@ public class StudentService {
                     tokenResponse.getRefreshToken()
             );
         } catch (BadCredentialsException e) {
-            throw new CustomException(ErrorCode.INVALID_AUTHORITY, "Invalid username or password");
+            throw new CustomException(ErrorStatus.UNAUTHORIZED_INFO, "Invalid username or password");
         }
+    }
+
+    public static TokenResponse getAuthentication(Integer id, String password, AuthenticationManagerBuilder authenticationManagerBuilder, TokenProvider tokenProvider, RedisTemplate<String, String> redisTemplate, long refreshExpired) {
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                id, password
+        );
+        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        TokenResponse tokenResponse = tokenProvider.createToken(authentication);
+
+        redisTemplate.opsForValue().set(
+                authentication.getName(),
+                tokenResponse.getRefreshToken(),
+                refreshExpired,
+                TimeUnit.SECONDS
+        );
+
+        return tokenResponse;
     }
 
     public void resetPassword(PasswordResetRequest passwordResetRequest) {
         Student student = studentRepository.findById(passwordResetRequest.getUserId())
-                .orElseThrow(() -> new CustomException(ENTITY_NOT_FOUND, "No such student with id " +passwordResetRequest.getUserId() ));
+                .orElseThrow(() -> new CustomException(UNAUTHORIZED_INFO, "No such student with id " +passwordResetRequest.getUserId() ));
 
         if (passwordEncoder.matches(passwordResetRequest.getOldPassword(), student.getPassword())) {
             student.updatePassword(passwordResetRequest.getNewPassword(), passwordEncoder);
             studentRepository.save(student);
         }
         else {
-            throw new CustomException(INVALID_REQUEST, "Old password not match");
+            throw new CustomException(UNAUTHORIZED_INFO, "Old password not match");
         }
     }
 }

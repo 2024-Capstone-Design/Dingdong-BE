@@ -13,7 +13,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-import static com.seoultech.capstone.exception.ErrorCode.INVALID_TOKEN;
+import static com.seoultech.capstone.response.ErrorStatus.INVALID_TOKEN;
 
 @Slf4j
 @RequiredArgsConstructor

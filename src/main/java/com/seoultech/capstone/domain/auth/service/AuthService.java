@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final TokenProvider tokenProvider;
     private final RedisTemplate<String, String> redisTemplate;
     @Value("${jwt.refresh_expired-time}")

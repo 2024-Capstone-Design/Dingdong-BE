@@ -1,9 +1,13 @@
-package com.seoultech.capstone.domain.fairytale;
+package com.seoultech.capstone.domain.fairytale.service;
 
+import com.seoultech.capstone.domain.fairytale.domain.Fairytale;
+import com.seoultech.capstone.domain.fairytale.domain.FairytaleRepository;
+import com.seoultech.capstone.domain.fairytale.dto.FairytaleRequest;
+import com.seoultech.capstone.domain.fairytale.dto.FairytaleResponse;
 import com.seoultech.capstone.domain.user.teacher.Teacher;
 import com.seoultech.capstone.domain.user.teacher.TeacherRepository;
 import com.seoultech.capstone.exception.CustomException;
-import com.seoultech.capstone.exception.ErrorCode;
+import com.seoultech.capstone.response.ErrorStatus;
 import com.seoultech.capstone.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,7 +23,7 @@ public class FairytaleService {
         final int id = SecurityUtil.getCurrentUserId();
 
         Teacher teacher = teacherRepository.findById(id)
-                .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND, "No such teacher with id " + id));
+                .orElseThrow(() -> new CustomException(ErrorStatus.ENTITY_NOT_FOUND, "No such teacher with id " + id));
 
         Fairytale fairytale = Fairytale.builder()
                 .title(fairytaleRequestDTO.getTitle())

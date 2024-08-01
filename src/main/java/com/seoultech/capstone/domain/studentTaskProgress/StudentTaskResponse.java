@@ -1,19 +1,20 @@
-package com.seoultech.capstone.domain.task;
+package com.seoultech.capstone.domain.studentTaskProgress;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class TaskResponse {
+public class StudentTaskResponse {
 
     @Schema(description = "과제 ID", example = "1")
-    private Integer id;
+    private Integer taskId;
 
     @Schema(description = "동화 ID", example = "1")
     private Integer fairytaleId;
@@ -42,9 +43,21 @@ public class TaskResponse {
     @Schema(description = "생성 일자", example = "2023-08-01T00:00:00")
     private LocalDateTime createdAt;
 
+    @Schema(description = "학생 ID", example = "1")
+    private Integer studentId;
+
+    @Schema(description = "완료 여부", example = "true")
+    private Boolean completed;
+
+    @Schema(description = "완료 날짜", example = "2023-08-15T00:00:00")
+    private LocalDateTime completionDate;
+
+    @Schema(description = "이미지 URL", example = "http://example.com/image.jpg")
+    private String baseImgUrl;
+
     @Builder
-    public TaskResponse(Integer id, Integer fairytaleId, Integer targetClassId, Integer teacherId, String title, String summary, LocalDateTime startDate, LocalDateTime finishDate, Integer questionId, LocalDateTime createdAt) {
-        this.id = id;
+    public StudentTaskResponse(Integer taskId, Integer fairytaleId, Integer targetClassId, Integer teacherId, String title, String summary, LocalDateTime startDate, LocalDateTime finishDate, Integer questionId, LocalDateTime createdAt, Integer studentId, Boolean completed, LocalDateTime completionDate, String baseImgUrl) {
+        this.taskId = taskId;
         this.fairytaleId = fairytaleId;
         this.targetClassId = targetClassId;
         this.teacherId = teacherId;
@@ -54,6 +67,9 @@ public class TaskResponse {
         this.finishDate = finishDate;
         this.questionId = questionId;
         this.createdAt = createdAt;
+        this.studentId = studentId;
+        this.completed = completed;
+        this.completionDate = completionDate;
+        this.baseImgUrl = baseImgUrl;
     }
 }
-

@@ -1,6 +1,6 @@
 package com.seoultech.capstone.domain.task;
 
-import com.seoultech.capstone.domain.fairytale.Fairytale;
+import com.seoultech.capstone.domain.fairytale.domain.Fairytale;
 import com.seoultech.capstone.domain.group.Group;
 import com.seoultech.capstone.domain.question.Question;
 import com.seoultech.capstone.domain.user.teacher.Teacher;
