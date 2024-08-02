@@ -6,7 +6,11 @@ import com.seoultech.capstone.domain.group.Group;
 import com.seoultech.capstone.domain.group.GroupRepository;
 import com.seoultech.capstone.domain.question.Question;
 import com.seoultech.capstone.domain.question.QuestionRepository;
-import com.seoultech.capstone.domain.studentTaskProgress.StudentTaskProgressRepository;
+import com.seoultech.capstone.domain.studentTaskProgress.Enum.Progress;
+import com.seoultech.capstone.domain.studentTaskProgress.entity.StudentTask;
+import com.seoultech.capstone.domain.studentTaskProgress.StudentTaskRepository;
+import com.seoultech.capstone.domain.task.dto.TaskRequest;
+import com.seoultech.capstone.domain.task.dto.TaskResponse;
 import com.seoultech.capstone.domain.user.student.Student;
 import com.seoultech.capstone.domain.user.student.StudentRepository;
 import com.seoultech.capstone.domain.user.teacher.Teacher;
@@ -18,10 +22,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static com.seoultech.capstone.response.ErrorStatus.ENTITY_NOT_FOUND;
 
 @Slf4j
 @Service
@@ -34,7 +37,7 @@ public class TaskService {
     private final QuestionRepository questionRepository;
     private final TeacherRepository teacherRepository;
     private final StudentRepository studentRepository;
-    private final StudentTaskProgressRepository studentTaskProgressRepository;
+    private final StudentTaskRepository studentTaskRepository;
 
     public TaskResponse addTask(TaskRequest taskRequest) {
 
@@ -63,6 +66,21 @@ public class TaskService {
 
         Task savedTask = taskRepository.save(task);
 
+        List<Student> students = studentRepository.findByGroupId(targetClass.getId());
+        List<StudentTask> studentTaskProgresses = students.stream()
+                .map(student -> StudentTask.builder()
+                        .studentId(student.getId())
+                        .taskId(savedTask.getId())
+                        .student(student)
+                        .task(savedTask)
+                        .completed(false)
+                        .progress(Progress.NOT_STARTED)
+                        .createdAt(LocalDateTime.now())
+                        .build())
+                .collect(Collectors.toList());
+
+        studentTaskRepository.saveAll(studentTaskProgresses);
+
         return savedTask.toResponse();
     }
 
@@ -73,13 +91,4 @@ public class TaskService {
                 .collect(Collectors.toList());
     }
 
-    public List<TaskResponse> getTasksByStudentId(Integer studentId) {
-        Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new CustomException(ENTITY_NOT_FOUND, "Invalid student ID: " + studentId));
-
-        List<Task> tasks = taskRepository.findByTargetClassId(student.getGroup().getId());
-        return tasks.stream()
-                .map(Task::toResponse)
-                .collect(Collectors.toList());
-    }
 }

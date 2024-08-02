@@ -1,6 +1,8 @@
 package com.seoultech.capstone.domain.task;
 
 import com.seoultech.capstone.common.ListWrapper;
+import com.seoultech.capstone.domain.task.dto.TaskRequest;
+import com.seoultech.capstone.domain.task.dto.TaskResponse;
 import com.seoultech.capstone.response.ApiResponseDTO;
 import com.seoultech.capstone.response.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,14 +41,6 @@ public class TaskController {
     @GetMapping("/teacher/{teacherId}")
     public ResponseEntity<ApiResponseDTO<ListWrapper<TaskResponse>>> getTasksByTeacherId(@PathVariable Integer teacherId) {
         List<TaskResponse> tasks = taskService.getTasksByTeacherId(teacherId);
-        return ApiResponseDTO.success(SuccessStatus.TASK_RETRIEVAL_SUCCESS, new ListWrapper<>(tasks));
-    }
-
-    @Operation(summary = "학생별 배정된 과제 조회", description = "학생 ID로 배정된 모든 과제를 조회합니다.")
-    @ApiResponse(responseCode = "200", description = "과제 조회 성공", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
-    @GetMapping("/student/{studentId}")
-    public ResponseEntity<ApiResponseDTO<ListWrapper<TaskResponse>>> getTasksByStudentId(@PathVariable Integer studentId) {
-        List<TaskResponse> tasks = taskService.getTasksByStudentId(studentId);
         return ApiResponseDTO.success(SuccessStatus.TASK_RETRIEVAL_SUCCESS, new ListWrapper<>(tasks));
     }
 

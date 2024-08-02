@@ -1,32 +1,39 @@
-package com.seoultech.capstone.domain.studentTaskProgress;
+package com.seoultech.capstone.domain.studentTaskProgress.entity;
 
 import com.seoultech.capstone.domain.studentTaskProgress.Enum.Progress;
 import com.seoultech.capstone.domain.task.Task;
 import com.seoultech.capstone.domain.user.student.Student;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.time.LocalDateTime;
+
 @Entity
-@Getter
-@NoArgsConstructor
-@Table(name = "student_task_progress")
+@Table(name = "student_task")
 @Builder
 @AllArgsConstructor
-public class StudentTaskProgress {
+@NoArgsConstructor
+@Getter
+@Setter
+public class StudentTask {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
+
+    @Column(name = "student_id", nullable = false, insertable = false, updatable = false)
+    private Integer studentId;
+
+    @Column(name = "task_id", nullable = false, insertable = false, updatable = false)
+    private Integer taskId;
 
     @ManyToOne
-    @JoinColumn(name = "student_id", nullable = false)
+    @JoinColumn(name = "student_id", referencedColumnName = "id", nullable = false)
     private Student student;
 
     @ManyToOne
-    @JoinColumn(name = "task_id", nullable = false)
+    @JoinColumn(name = "task_id", referencedColumnName = "id", nullable = false)
     private Task task;
 
     @Column(name = "completed", nullable = false)
@@ -54,4 +61,3 @@ public class StudentTaskProgress {
         this.completionDate = completionDate;
     }
 }
-

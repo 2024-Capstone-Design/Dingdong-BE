@@ -1,5 +1,6 @@
 package com.seoultech.capstone.domain.user.teacher;
 
+import com.seoultech.capstone.domain.auth.Enum.UserRole;
 import com.seoultech.capstone.domain.auth.dto.LoginResponse;
 import com.seoultech.capstone.domain.auth.jwt.TokenProvider;
 import com.seoultech.capstone.domain.auth.jwt.TokenResponse;
@@ -100,7 +101,7 @@ public class TeacherService {
                 .orElseThrow(() -> new CustomException(ENTITY_NOT_FOUND, "No such teacher with email " + teacherLoginRequest.getEmail()));
 
         try {
-            TokenResponse tokenResponse = StudentService.getAuthentication(teacher.getId(), teacherLoginRequest.getPassword(), authenticationManagerBuilder, tokenProvider, redisTemplate, refreshExpired);
+            TokenResponse tokenResponse = StudentService.getAuthentication(UserRole.TEACHER, teacher.getId(), teacherLoginRequest.getPassword(), authenticationManagerBuilder, tokenProvider, redisTemplate, refreshExpired);
 
             return new LoginResponse(
                     "TEACHER",

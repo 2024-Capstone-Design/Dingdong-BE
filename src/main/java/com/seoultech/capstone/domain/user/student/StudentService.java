@@ -1,5 +1,6 @@
 package com.seoultech.capstone.domain.user.student;
 
+import com.seoultech.capstone.domain.auth.Enum.UserRole;
 import com.seoultech.capstone.domain.auth.dto.LoginResponse;
 import com.seoultech.capstone.domain.user.student.dto.*;
 import com.seoultech.capstone.domain.auth.jwt.TokenProvider;
@@ -44,7 +45,7 @@ public class StudentService {
                 .orElseThrow(() -> new CustomException(UNAUTHORIZED_INFO, "No such student with username " +studentLoginRequest.getUsername() + " and group ID " + studentLoginRequest.getGroupId()));
 
         try {
-            TokenResponse tokenResponse = getAuthentication(student.getId(), studentLoginRequest.getPassword(), authenticationManagerBuilder, tokenProvider, redisTemplate, refreshExpired);
+            TokenResponse tokenResponse = getAuthentication(UserRole.STUDENT, student.getId(), studentLoginRequest.getPassword(), authenticationManagerBuilder, tokenProvider, redisTemplate, refreshExpired);
 
             return new LoginResponse(
                     "STUDENT",
@@ -52,14 +53,20 @@ public class StudentService {
                     tokenResponse.getRefreshToken()
             );
         } catch (BadCredentialsException e) {
+            e.printStackTrace();
             throw new CustomException(ErrorStatus.UNAUTHORIZED_INFO, "Invalid username or password");
         }
     }
 
-    public static TokenResponse getAuthentication(Integer id, String password, AuthenticationManagerBuilder authenticationManagerBuilder, TokenProvider tokenProvider, RedisTemplate<String, String> redisTemplate, long refreshExpired) {
+    public static TokenResponse getAuthentication(UserRole userRole, Integer id, String password, AuthenticationManagerBuilder authenticationManagerBuilder, TokenProvider tokenProvider, RedisTemplate<String, String> redisTemplate, long refreshExpired) {
+
+        String rolePrefix = userRole.getPrefix();
+        String prefixedId = rolePrefix + id;
+
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                id, password
+                prefixedId, password
         );
+
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 

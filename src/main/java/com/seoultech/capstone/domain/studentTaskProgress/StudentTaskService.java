@@ -3,6 +3,7 @@ package com.seoultech.capstone.domain.studentTaskProgress;
 import com.seoultech.capstone.domain.studentTaskProgress.Enum.Progress;
 import com.seoultech.capstone.domain.studentTaskProgress.dto.StudentTaskProgressRequest;
 import com.seoultech.capstone.domain.studentTaskProgress.dto.StudentTaskProgressResponse;
+import com.seoultech.capstone.domain.studentTaskProgress.entity.StudentTask;
 import com.seoultech.capstone.domain.task.Task;
 import com.seoultech.capstone.domain.task.TaskRepository;
 import com.seoultech.capstone.domain.user.student.Student;
@@ -13,14 +14,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class StudentTaskProgressService {
+public class StudentTaskService {
 
-    private final StudentTaskProgressRepository studentTaskProgressRepository;
+    private final StudentTaskRepository studentTaskRepository;
     private final StudentRepository studentRepository;
     private final TaskRepository taskRepository;
 
@@ -30,7 +32,10 @@ public class StudentTaskProgressService {
         Task task = taskRepository.findById(request.getTaskId())
                 .orElseThrow(() -> new CustomException(ErrorStatus.ENTITY_NOT_FOUND, "No such task with id " + request.getTaskId()));
 
-        StudentTaskProgress studentTaskProgress = StudentTaskProgress.builder()
+        studentTaskRepository.findByStudentIdAndTaskId(request.getStudentId(), request.getTaskId())
+                .ifPresent(existingProgress -> studentTaskRepository.delete(existingProgress));
+
+        StudentTask studentTask = StudentTask.builder()
                 .student(student)
                 .task(task)
                 .createdAt(LocalDateTime.now())
@@ -38,26 +43,49 @@ public class StudentTaskProgressService {
                 .progress(Progress.NOT_STARTED)
                 .build();
 
-        StudentTaskProgress savedProgress = studentTaskProgressRepository.save(studentTaskProgress);
+        StudentTask savedProgress = studentTaskRepository.save(studentTask);
 
         return createStudentTaskResponse(savedProgress, task);
     }
 
-    public List<StudentTaskProgressResponse> getProgressedTasksByStudentId(Integer studentId) {
-        List<StudentTaskProgress> studentTaskProgresses = studentTaskProgressRepository.findByStudentId(studentId);
-        return studentTaskProgresses.stream()
+    public List<StudentTaskProgressResponse> getProgressedTasksByStudentId(Integer studentId, String sortBy, List<Progress> includeProgress) {
+        List<StudentTask> studentTasks = studentTaskRepository.findByStudentId(studentId);
+
+        if (includeProgress != null && !includeProgress.isEmpty()) {
+            studentTasks = studentTasks.stream()
+                    .filter(task -> includeProgress.contains(task.getProgress()))
+                    .collect(Collectors.toList());
+        }
+
+        Comparator<StudentTask> comparator = Comparator.comparing(StudentTask::getCompletionDate, Comparator.nullsLast(LocalDateTime::compareTo));
+        if ("progress".equalsIgnoreCase(sortBy)) {
+            comparator = Comparator.comparing(StudentTask::getProgress, Comparator.comparingInt(this::getProgressOrder));
+        }
+
+        return studentTasks.stream()
+                .sorted(comparator)
                 .map(this::convertToStudentTaskResponse)
                 .collect(Collectors.toList());
     }
 
-    private StudentTaskProgressResponse convertToStudentTaskResponse(StudentTaskProgress studentTaskProgress) {
-        Task task = studentTaskProgress.getTask();
-        return createStudentTaskResponse(studentTaskProgress, task);
+    private int getProgressOrder(Progress progress) {
+        switch (progress) {
+            case NOT_STARTED: return 1;
+            case CHAT: return 2;
+            case SKETCH: return 3;
+            case CODING: return 4;
+            case COMPLETED: return 5;
+            default: throw new CustomException(ErrorStatus.ENTITY_NOT_FOUND, "Unknown progress: " + progress);
+        }
     }
 
-    private StudentTaskProgressResponse createStudentTaskResponse(StudentTaskProgress studentTaskProgress, Task task) {
+    private StudentTaskProgressResponse convertToStudentTaskResponse(StudentTask studentTask) {
+        Task task = studentTask.getTask();
+        return createStudentTaskResponse(studentTask, task);
+    }
+
+    private StudentTaskProgressResponse createStudentTaskResponse(StudentTask studentTask, Task task) {
         return StudentTaskProgressResponse.studentTaskProgressResponseBuilder()
-                .studentTaskProgressId(studentTaskProgress.getId())
                 .taskId(task.getId())
                 .taskTitle(task.getTitle())
                 .taskSummary(task.getSummary())
@@ -73,24 +101,24 @@ public class StudentTaskProgressService {
                 .questionPrompt(task.getQuestion().getPrompt())
                 .questionOutput(task.getQuestion().getOutput())
                 .createdAt(task.getCreatedAt())
-                .studentId(studentTaskProgress.getStudent().getId())
-                .completed(studentTaskProgress.getCompleted())
-                .completionDate(studentTaskProgress.getCompletionDate())
-                .progress(studentTaskProgress.getProgress())
+                .studentId(studentTask.getStudent().getId())
+                .completed(studentTask.getCompleted())
+                .completionDate(studentTask.getCompletionDate())
+                .progress(studentTask.getProgress())
                 .build();
     }
 
     public StudentTaskProgressResponse updateProgress(Integer id, Progress progress) {
-        StudentTaskProgress studentTaskProgress = studentTaskProgressRepository.findById(id)
+        StudentTask studentTask = studentTaskRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorStatus.ENTITY_NOT_FOUND, "No such progress with id " + id));
 
-        studentTaskProgress.updateProgress(progress);
+        studentTask.updateProgress(progress);
 
         if (progress.equals(Progress.COMPLETED)){
-            studentTaskProgress.updateCompleted(true, LocalDateTime.now());
+            studentTask.updateCompleted(true, LocalDateTime.now());
         }
 
-        StudentTaskProgress updatedProgress = studentTaskProgressRepository.save(studentTaskProgress);
+        StudentTask updatedProgress = studentTaskRepository.save(studentTask);
 
         return convertToStudentTaskResponse(updatedProgress);
     }

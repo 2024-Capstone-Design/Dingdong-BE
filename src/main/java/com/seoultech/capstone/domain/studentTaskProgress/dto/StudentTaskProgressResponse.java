@@ -1,7 +1,7 @@
 package com.seoultech.capstone.domain.studentTaskProgress.dto;
 
 import com.seoultech.capstone.domain.studentTaskProgress.Enum.Progress;
-import com.seoultech.capstone.domain.task.TaskResponse;
+import com.seoultech.capstone.domain.task.dto.TaskResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
