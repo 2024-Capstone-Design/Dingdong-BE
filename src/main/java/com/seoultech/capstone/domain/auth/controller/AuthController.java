@@ -26,15 +26,15 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @Operation(summary = "Logout", description = "현재 사용자를 로그아웃 합니다.")
-    @ApiResponse(responseCode = "200", description = "Logout successful", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
+    @Operation(summary = "로그아웃", description = "현재 사용자를 로그아웃 합니다.")
+    @ApiResponse(responseCode = "200", description = "Logout successful", content = @Content(schema = @Schema(implementation = Object.class)))
     @PostMapping("/logout")
     public ResponseEntity<ApiResponseDTO<String>> logout(HttpServletRequest request, HttpServletResponse response) {
         authService.logout(request, response);
-        return ApiResponseDTO.success(SuccessStatus.LOGOUT_SUCCESS, "logout success");
+        return ApiResponseDTO.success(SuccessStatus.LOGOUT_SUCCESS);
     }
 
-    @Operation(summary = "Token Refresh", description = "만료된 JWT 토큰을 리프레쉬 합니다.")
+    @Operation(summary = "토큰 재발급", description = "만료된 JWT 토큰을 재발급 합니다.")
     @ApiResponse(responseCode = "200", description = "Token refresh successful", content = @Content(schema = @Schema(implementation = TokenResponse.class)))
     @GetMapping(value = "/tokenRefresh", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponseDTO<TokenResponse>> refresh() {

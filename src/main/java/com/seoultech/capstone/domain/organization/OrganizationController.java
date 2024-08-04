@@ -24,7 +24,7 @@ public class OrganizationController {
     private final OrganizationService organizationService;
 
     @Operation(summary = "조직 조회", description = "모든 조직을 조회합니다.")
-    @ApiResponse(responseCode = "200", description = "조직 조회 성공", content = @Content(schema = @Schema(implementation = OrganizationResponse.class)))
+    @ApiResponse(responseCode = "200", description = "조직 조회 성공", content = @Content(schema = @Schema(implementation = List.class)))
     @GetMapping("")
     public ResponseEntity<ApiResponseDTO<List<OrganizationResponse>>> getOrganizations() {
         List<OrganizationResponse> organizations = organizationService.getOrganizations();

@@ -28,7 +28,7 @@ public class TaskController {
     private final TaskService taskService;
 
     @Operation(summary = "과제 추가", description = "새로운 과제를 추가합니다.")
-    @ApiResponse(responseCode = "201", description = "과제 추가 성공", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
+    @ApiResponse(responseCode = "201", description = "과제 추가 성공", content = @Content(schema = @Schema(implementation = TaskResponse.class)))
     @Secured("ROLE_TEACHER")
     @PostMapping
     public ResponseEntity<ApiResponseDTO<TaskResponse>> addTask(@RequestBody TaskRequest taskRequest) {
@@ -37,7 +37,7 @@ public class TaskController {
     }
 
     @Operation(summary = "교사별 과제 조회", description = "교사 ID로 연관된 모든 과제를 조회합니다.")
-    @ApiResponse(responseCode = "200", description = "과제 조회 성공", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
+    @ApiResponse(responseCode = "200", description = "과제 조회 성공", content = @Content(schema = @Schema(implementation = ListWrapper.class)))
     @GetMapping("/teacher/{teacherId}")
     public ResponseEntity<ApiResponseDTO<ListWrapper<TaskResponse>>> getTasksByTeacherId(@PathVariable Integer teacherId) {
         List<TaskResponse> tasks = taskService.getTasksByTeacherId(teacherId);

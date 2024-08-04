@@ -40,20 +40,21 @@ public class StudentController {
 
     @PreAuthorize("hasRole('STUDENT')")
     @Operation(summary = "비밀번호 재설정", description = "학생이 비밀번호를 재설정합니다.")
-    @ApiResponse(responseCode = "200", description = "비밀번호 변경 성공", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
+    @ApiResponse(responseCode = "200", description = "비밀번호 변경 성공", content = @Content(schema = @Schema(implementation = Object.class)))
+    @ApiResponse(responseCode = "401", description = "비밀번호 재설정 실패", content = @Content(schema = @Schema(implementation = Object.class)))
     @PostMapping("/reset-password")
-    public ResponseEntity<ApiResponseDTO<String>> resetPassword(@RequestBody @Valid PasswordResetRequest passwordResetRequest) {
+    public ResponseEntity<ApiResponseDTO<Object>> resetPassword(@RequestBody @Valid PasswordResetRequest passwordResetRequest) {
         studentService.resetPassword(passwordResetRequest);
-        return ApiResponseDTO.success(SuccessStatus.PASSWORD_RESET_SUCCESS, "비밀번호 변경 성공!");
+        return ApiResponseDTO.success(SuccessStatus.PASSWORD_RESET_SUCCESS);
     }
 
     @PreAuthorize("hasRole('STUDENT')")
     @Operation(summary = "프로필 사진 수정", description = "학생이 프로필 사진을 수정합니다.")
-    @ApiResponse(responseCode = "200", description = "프로필 사진 수정 성공", content = @Content(schema = @Schema(implementation = ApiResponseDTO.class)))
+    @ApiResponse(responseCode = "200", description = "프로필 사진 수정 성공", content = @Content(schema = @Schema(implementation = Object.class)))
     @PostMapping("/update-profile-picture")
-    public ResponseEntity<ApiResponseDTO<String>> updateProfilePicture(@RequestBody @Valid ProfilePictureUpdateRequest profilePictureUpdateRequest) {
+    public ResponseEntity<ApiResponseDTO<Object>> updateProfilePicture(@RequestBody @Valid ProfilePictureUpdateRequest profilePictureUpdateRequest) {
         studentService.updateProfilePicture(profilePictureUpdateRequest);
-        return ApiResponseDTO.success(SuccessStatus.PROFILE_PICTURE_UPDATE_SUCCESS, "프로필 사진 수정 성공!");
+        return ApiResponseDTO.success(SuccessStatus.PROFILE_PICTURE_UPDATE_SUCCESS);
     }
 }
 

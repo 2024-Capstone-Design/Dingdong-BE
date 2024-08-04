@@ -29,7 +29,7 @@ public class FairytaleController {
     private final FairytaleService fairytaleService;
 
     @Operation(summary = "동화 추가", description = "새로운 동화를 추가합니다.")
-    @ApiResponse(responseCode = "201", description = "동화 추가 성공", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
+    @ApiResponse(responseCode = "201", description = "동화 추가 성공", content = @Content(schema = @Schema(implementation = FairytaleResponse.class)))
     @Secured("ROLE_TEACHER")
     @PostMapping
     public ResponseEntity<ApiResponseDTO<FairytaleResponse>> addFairytale(@RequestBody FairytaleRequest fairytaleRequest) {
@@ -38,7 +38,7 @@ public class FairytaleController {
     }
 
     @Operation(summary = "동화 리스트 조회", description = "전체 동화 리스트를 조회합니다.")
-    @ApiResponse(responseCode = "200", description = "동화 리스트 조회 성공", content = @Content(schema = @Schema(implementation = ApiResponseDTO.class)))
+    @ApiResponse(responseCode = "200", description = "동화 리스트 조회 성공", content = @Content(schema = @Schema(implementation = FairytaleResponse.class)))
     @GetMapping
     public ResponseEntity<ApiResponseDTO<ListWrapper<FairytaleResponse>>> getAllFairytales() {
         List<FairytaleResponse> fairytales = fairytaleService.getAllFairytales();
@@ -46,7 +46,7 @@ public class FairytaleController {
     }
 
     @Operation(summary = "동화 조회", description = "ID로 동화를 조회합니다.")
-    @ApiResponse(responseCode = "200", description = "동화 조회 성공", content = @Content(schema = @Schema(implementation = ApiResponseDTO.class)))
+    @ApiResponse(responseCode = "200", description = "동화 조회 성공", content = @Content(schema = @Schema(implementation = FairytaleResponse.class)))
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponseDTO<FairytaleResponse>> getFairytaleById(@PathVariable Integer id) {
         FairytaleResponse fairytale = fairytaleService.getFairytaleById(id);

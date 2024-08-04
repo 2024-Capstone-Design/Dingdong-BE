@@ -25,7 +25,7 @@ public class GroupController {
     private final GroupService groupService;
 
     @Operation(summary = "그룹 생성", description = "새로운 그룹을 생성합니다.")
-    @ApiResponse(responseCode = "201", description = "그룹 생성 성공", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
+    @ApiResponse(responseCode = "201", description = "그룹 생성 성공", content = @Content(schema = @Schema(implementation = GroupResponse.class)))
     @PostMapping
     public ResponseEntity<ApiResponseDTO<GroupResponse>> createGroup(@RequestBody GroupRequest groupRequest) {
         GroupResponse createdGroup = groupService.createGroup(groupRequest);
@@ -33,7 +33,7 @@ public class GroupController {
     }
 
     @Operation(summary = "교사별 그룹 조회", description = "교사 ID로 관련된 모든 그룹을 조회합니다.")
-    @ApiResponse(responseCode = "200", description = "그룹 조회 성공", content = @Content(schema = @Schema(implementation = ApiResponseDTO.class)))
+    @ApiResponse(responseCode = "200", description = "그룹 조회 성공", content = @Content(schema = @Schema(implementation = ListWrapper.class)))
     @GetMapping("/teacher/{teacherId}")
     public ResponseEntity<ApiResponseDTO<ListWrapper<GroupResponse>>> getGroupsByTeacherId(@PathVariable Integer teacherId) {
         List<GroupResponse> groups = groupService.getGroupsByTeacherId(teacherId);

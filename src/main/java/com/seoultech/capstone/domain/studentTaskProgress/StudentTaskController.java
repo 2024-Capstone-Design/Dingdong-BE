@@ -32,7 +32,7 @@ public class StudentTaskController {
     private final StudentTaskService studentTaskService;
 
     @Operation(summary = "학생 과제 진행 시작", description = "학생이 과제 진행을 시작합니다.")
-    @ApiResponse(responseCode = "201", description = "학생 과제 진행 시작 성공", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
+    @ApiResponse(responseCode = "201", description = "학생 과제 진행 시작 성공", content = @Content(schema = @Schema(implementation = StudentTaskProgressResponse.class)))
     @PostMapping
     public ResponseEntity<ApiResponseDTO<StudentTaskProgressResponse>> createStudentTaskProgress(@RequestBody @Valid StudentTaskProgressRequest request) {
         StudentTaskProgressResponse response = studentTaskService.createStudentTaskProgress(request);
@@ -40,7 +40,7 @@ public class StudentTaskController {
     }
 
     @Operation(summary = "학생별 과제 조회", description = "학생 ID로 진행중인/완료된 모든 과제를 조회합니다.")
-    @ApiResponse(responseCode = "200", description = "학생별 진행중 과제 조회 성공", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
+    @ApiResponse(responseCode = "200", description = "학생별 진행중 과제 조회 성공", content = @Content(schema = @Schema(implementation = ListWrapper.class)))
     @GetMapping("/student/{studentId}")
     public ResponseEntity<ApiResponseDTO<ListWrapper<StudentTaskProgressResponse>>> getProgressedTasksByStudentId(
             @PathVariable Integer studentId,
@@ -62,7 +62,7 @@ public class StudentTaskController {
 
     @Operation(
             summary = "학생 과제 진행 상태 업데이트", description = "studentTaskId로 학생의 과제 진행 상태를 업데이트합니다.")
-    @ApiResponse(responseCode = "200", description = "학생 과제 진행 상태 업데이트 성공", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
+    @ApiResponse(responseCode = "200", description = "학생 과제 진행 상태 업데이트 성공", content = @Content(schema = @Schema(implementation = StudentTaskProgressResponse.class)))
     @PatchMapping("/{studentTaskId}/progress")
     public ResponseEntity<ApiResponseDTO<StudentTaskProgressResponse>> updateProgress(@PathVariable Integer studentTaskId, @RequestBody @Valid StudentTaskProgressUpdateRequest request) {
         StudentTaskProgressResponse response = studentTaskService.updateProgress(studentTaskId, request.getProgress());
