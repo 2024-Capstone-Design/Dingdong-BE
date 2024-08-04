@@ -41,8 +41,12 @@ public class ApiResponseDTO<T> {
                         .data(data).build());
     }
 
+    public static <T> ResponseEntity<ApiResponseDTO<T>> fail(ErrorStatus errorStatus) {
+        return ApiResponseDTO.fail(errorStatus.getHttpStatus().value(),  errorStatus.getDetail());
+    }
+
+
     public static <T> ResponseEntity<ApiResponseDTO<T>> fail(ErrorStatus errorStatus, String message) {
-        System.out.println(message);
         String fullErrorMessage = message != null ? errorStatus.getDetail() + " " + message : errorStatus.getDetail();
         return ApiResponseDTO.fail(errorStatus.getHttpStatus().value(), fullErrorMessage);
     }
