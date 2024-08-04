@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class StudentTaskProgressResponse extends TaskResponse {
 
     @Schema(description = "학생 과제 진행 ID", example = "1")
-    private Integer studentTaskProgressId;
+    private Long studentTaskId;
 
     @Schema(description = "학생 ID", example = "1")
     private Integer studentId;
@@ -29,9 +29,9 @@ public class StudentTaskProgressResponse extends TaskResponse {
     private Progress progress;
 
     @Builder(builderMethodName = "studentTaskProgressResponseBuilder")
-    public StudentTaskProgressResponse(Integer studentTaskProgressId, Integer taskId, String taskTitle, String taskSummary, Integer fairytaleId, String fairytaleTitle, String fairytaleImageUrl, Integer targetClassId, String targetClassName, LocalDateTime startDate, LocalDateTime finishDate, Integer questionId, String questionType, String questionPrompt, String questionOutput, LocalDateTime createdAt, Integer studentId, Boolean completed, LocalDateTime completionDate, Progress progress) {
+    public StudentTaskProgressResponse(Long studentTaskId, Integer taskId, String taskTitle, String taskSummary, Integer fairytaleId, String fairytaleTitle, String fairytaleImageUrl, Integer targetClassId, String targetClassName, LocalDateTime startDate, LocalDateTime finishDate, Integer questionId, String questionType, String questionPrompt, String questionOutput, LocalDateTime createdAt, Integer studentId, Boolean completed, LocalDateTime completionDate, Progress progress) {
         super(taskId, taskTitle, taskSummary, fairytaleId, fairytaleTitle, fairytaleImageUrl, targetClassId, targetClassName, startDate, finishDate, questionId, questionType, questionPrompt, questionOutput, createdAt);
-        this.studentTaskProgressId = studentTaskProgressId;
+        this.studentTaskId = studentTaskId;
         this.studentId = studentId;
         this.completed = completed;
         this.completionDate = completionDate;

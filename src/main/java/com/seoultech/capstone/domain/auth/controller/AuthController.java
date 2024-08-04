@@ -17,7 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "3. 인증 관련 API", description = "인증과 관련된 API")
+@Tag(name = "4. 인증 관련 API", description = "인증과 관련된 API")
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/auth")

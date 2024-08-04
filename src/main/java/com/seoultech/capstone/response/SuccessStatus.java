@@ -54,10 +54,17 @@ public enum SuccessStatus {
     STUDENT_TASK_PROGRESS_UPDATE_SUCCESS(HttpStatus.OK, "학생 과제 진행 상태 업데이트 성공"),
 
     /**
+     * 유저
+     *
+     */
+    USER_INFO_GET_SUCCESS(HttpStatus.OK, "유저 정보 가져오기 성공"),
+
+    /**
      * 과제 관련
      */
     TASK_ADD_SUCCESS(HttpStatus.CREATED, "과제 추가 성공"),
-    TASK_RETRIEVAL_SUCCESS(HttpStatus.OK, "과제 조회 성공");
+    TASK_RETRIEVAL_SUCCESS(HttpStatus.OK, "과제 조회 성공"),
+    PROFILE_PICTURE_UPDATE_SUCCESS(HttpStatus.OK, "프로필 사진 수정 성공");
 
     private final HttpStatus httpStatus;
     private final String message;

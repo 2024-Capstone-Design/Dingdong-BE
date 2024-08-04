@@ -30,8 +30,6 @@ public class OrganizationService {
                 .name(organization.getName())
                 .registeredAt(organization.getRegisteredAt())
                 .type(organization.getType())
-                .contactInfo(organization.getContactInfo())
-                .adminInfo(organization.getAdminInfo())
                 .build();
     }
 }

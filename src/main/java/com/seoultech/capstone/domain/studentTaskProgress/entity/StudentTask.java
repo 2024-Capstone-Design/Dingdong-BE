@@ -60,4 +60,8 @@ public class StudentTask {
         this.completed = completed;
         this.completionDate = completionDate;
     }
+
+    public LocalDateTime getDueDate() {
+        return this.task.getFinishDate();
+    }
 }

@@ -2,10 +2,11 @@ package com.seoultech.capstone.domain.user.teacher;
 
 import com.seoultech.capstone.domain.auth.dto.LoginResponse;
 import com.seoultech.capstone.domain.user.student.dto.PasswordResetRequest;
+import com.seoultech.capstone.domain.user.common.dto.ProfilePictureUpdateRequest;
 import com.seoultech.capstone.domain.user.student.dto.StudentsRegisterRequest;
 import com.seoultech.capstone.domain.user.student.dto.StudentsRegisterResponse;
 import com.seoultech.capstone.domain.user.teacher.dto.TeacherSignupRequest;
-import com.seoultech.capstone.domain.user.teacher.dto.TeacherSignupResponse;
+import com.seoultech.capstone.domain.user.teacher.dto.TeacherResponse;
 import com.seoultech.capstone.response.ApiResponseDTO;
 import com.seoultech.capstone.response.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,20 +39,22 @@ public class TeacherController {
     }
 
     @Operation(summary = "교사 회원가입", description = "새로운 교사를 등록합니다.")
-    @ApiResponse(responseCode = "201", description = "회원가입 성공", content = @Content(schema = @Schema(implementation = TeacherSignupResponse.class)))
+    @ApiResponse(responseCode = "201", description = "회원가입 성공", content = @Content(schema = @Schema(implementation = TeacherResponse.class)))
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponseDTO<TeacherSignupResponse>> teacherSignup(@RequestBody @Valid TeacherSignupRequest teacherSignupRequest) {
-        TeacherSignupResponse signupResponse = teacherService.teacherSignup(teacherSignupRequest);
+    public ResponseEntity<ApiResponseDTO<TeacherResponse>> teacherSignup(@RequestBody @Valid TeacherSignupRequest teacherSignupRequest) {
+        TeacherResponse signupResponse = teacherService.teacherSignup(teacherSignupRequest);
         return ApiResponseDTO.success(SuccessStatus.SIGNUP_SUCCESS, signupResponse);
     }
 
     @PreAuthorize("hasRole('TEACHER')")
     @Operation(summary = "비밀번호 재설정", description = "교사가 비밀번호를 재설정합니다.")
-    @ApiResponse(responseCode = "200", description = "비밀번호 변경 성공", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
+    @ApiResponse(responseCode = "200", description = "비밀번호 변경 성공", content = @Content(schema = @Schema(implementation = ApiResponseDTO.class)))
+    @ApiResponse(responseCode = "401", description = "비밀번호 변경 실패", content = @Content(schema = @Schema(implementation = ApiResponseDTO.class)))
+
     @PostMapping("/reset-password")
-    public ResponseEntity<ApiResponseDTO<String>> resetPassword(@RequestBody @Valid PasswordResetRequest passwordResetRequest) {
+    public ResponseEntity<ApiResponseDTO<Object>> resetPassword(@RequestBody @Valid PasswordResetRequest passwordResetRequest) {
         teacherService.resetPassword(passwordResetRequest);
-        return ApiResponseDTO.success(SuccessStatus.PASSWORD_RESET_SUCCESS, "비밀번호 변경 성공!");
+        return ApiResponseDTO.success(SuccessStatus.PASSWORD_RESET_SUCCESS);
     }
 
     @PreAuthorize("hasRole('TEACHER')")
@@ -61,5 +64,14 @@ public class TeacherController {
     public ResponseEntity<ApiResponseDTO<StudentsRegisterResponse>> registerStudents(@RequestBody @Valid StudentsRegisterRequest request) {
         StudentsRegisterResponse response = teacherService.registerStudents(request);
         return ApiResponseDTO.success(SuccessStatus.STUDENTS_REGISTER_SUCCESS, response);
+    }
+
+    @PreAuthorize("hasRole('TEACHER')")
+    @Operation(summary = "프로필 사진 수정", description = "교사가 프로필 사진을 수정합니다.")
+    @ApiResponse(responseCode = "200", description = "프로필 사진 수정 성공", content = @Content(schema = @Schema(implementation = ApiResponseDTO.class)))
+    @PostMapping("/update-profile-picture")
+    public ResponseEntity<ApiResponseDTO<String>> updateProfilePicture(@RequestBody @Valid ProfilePictureUpdateRequest profilePictureUpdateRequest) {
+        teacherService.updateProfilePicture(profilePictureUpdateRequest);
+        return ApiResponseDTO.success(SuccessStatus.PROFILE_PICTURE_UPDATE_SUCCESS, "프로필 사진 수정 성공!");
     }
 }

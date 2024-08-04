@@ -26,9 +26,4 @@ public class OrganizationResponse {
     @Schema(description = "조직 유형", example = "학교")
     private String type;
 
-    @Schema(description = "연락처 정보", example = "contact@example.com")
-    private String contactInfo;
-
-    @Schema(description = "관리자 정보", example = "admin@example.com")
-    private String adminInfo;
 }

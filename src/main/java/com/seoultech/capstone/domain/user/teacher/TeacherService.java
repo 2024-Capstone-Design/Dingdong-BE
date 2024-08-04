@@ -1,5 +1,6 @@
 package com.seoultech.capstone.domain.user.teacher;
 
+import com.seoultech.capstone.common.utils.SecurityUtils;
 import com.seoultech.capstone.domain.auth.Enum.UserRole;
 import com.seoultech.capstone.domain.auth.dto.LoginResponse;
 import com.seoultech.capstone.domain.auth.jwt.TokenProvider;
@@ -8,12 +9,13 @@ import com.seoultech.capstone.domain.group.Group;
 import com.seoultech.capstone.domain.group.GroupRepository;
 import com.seoultech.capstone.domain.organization.OrganizationRepository;
 import com.seoultech.capstone.domain.organization.OrganizationResponse;
+import com.seoultech.capstone.domain.user.common.dto.ProfilePictureUpdateRequest;
 import com.seoultech.capstone.domain.user.student.Student;
 import com.seoultech.capstone.domain.user.student.StudentRepository;
 import com.seoultech.capstone.domain.user.student.StudentService;
 import com.seoultech.capstone.domain.user.student.dto.*;
 import com.seoultech.capstone.domain.user.teacher.dto.TeacherSignupRequest;
-import com.seoultech.capstone.domain.user.teacher.dto.TeacherSignupResponse;
+import com.seoultech.capstone.domain.user.teacher.dto.TeacherResponse;
 import com.seoultech.capstone.exception.CustomException;
 import com.seoultech.capstone.response.ErrorStatus;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +52,7 @@ public class TeacherService {
     private final StudentRepository studentRepository;
     private final GroupRepository groupRepository;
 
-    public TeacherSignupResponse teacherSignup(TeacherSignupRequest teacherSignupRequest) throws CustomException {
+    public TeacherResponse teacherSignup(TeacherSignupRequest teacherSignupRequest) throws CustomException {
         try {
 
             String email = teacherSignupRequest.getEmail();
@@ -80,12 +82,10 @@ public class TeacherService {
                     newTeacher.getOrganization().getId(),
                     newTeacher.getOrganization().getName(),
                     newTeacher.getOrganization().getRegisteredAt(),
-                    newTeacher.getOrganization().getType(),
-                    newTeacher.getOrganization().getContactInfo(),
-                    newTeacher.getOrganization().getAdminInfo()
+                    newTeacher.getOrganization().getType()
             );
 
-            return new TeacherSignupResponse(newTeacher.getId(), newTeacher.getEmail(), newTeacher.getName(), organizationResponse);
+            return new TeacherResponse(newTeacher.getId(), newTeacher.getEmail(), newTeacher.getName(), organizationResponse);
 
 
 
@@ -115,6 +115,8 @@ public class TeacherService {
 
 
     public void resetPassword(PasswordResetRequest passwordResetRequest) {
+        SecurityUtils.checkCurrentUser(passwordResetRequest.getUserId());
+
         Teacher teacher = teacherRepository.findById(passwordResetRequest.getUserId())
                 .orElseThrow(() -> new CustomException(ENTITY_NOT_FOUND, "No such teacher with id " + passwordResetRequest.getUserId()));
 
@@ -162,5 +164,16 @@ public class TeacherService {
         }).collect(Collectors.toList());
 
         return new StudentsRegisterResponse(request.getGroupId(), signupResponses);
+    }
+
+    @Transactional
+    public void updateProfilePicture(ProfilePictureUpdateRequest profilePictureUpdateRequest) {
+        SecurityUtils.checkCurrentUser(profilePictureUpdateRequest.getUserId());
+
+        Teacher teacher = teacherRepository.findById(profilePictureUpdateRequest.getUserId())
+                .orElseThrow(() -> new CustomException(ENTITY_NOT_FOUND, "Teacher not found"));
+
+        teacher.updateProfileUrl(profilePictureUpdateRequest.getProfilePictureUrl());
+        teacherRepository.save(teacher);
     }
 }

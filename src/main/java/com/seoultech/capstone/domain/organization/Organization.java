@@ -34,5 +34,14 @@ public class Organization {
     @Column(name = "admin_info", length = 255)
     private String adminInfo;
 
+    public OrganizationResponse toOrganizationResponse() {
+        return OrganizationResponse.builder()
+                .id(this.id)
+                .name(this.name)
+                .registeredAt(this.registeredAt)
+                .type(this.type)
+                .build();
+    }
+
 }
 

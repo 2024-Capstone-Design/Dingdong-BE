@@ -56,5 +56,9 @@ public class Student {
         this.password = passwordEncoder.encode(newPassword);
     }
 
+    public void updateProfileUrl(String updateProfileUrl) {
+        this.profileUrl = updateProfileUrl;
+    }
+
 }
 

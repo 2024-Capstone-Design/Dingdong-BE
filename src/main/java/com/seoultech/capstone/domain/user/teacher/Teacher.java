@@ -59,7 +59,8 @@ public class Teacher {
         response.setId(this.id);
         response.setName(this.name);
         response.setPhoneNumber(this.phoneNumber);
-        response.setOrganization(this.organization);
+        response.setOrganization(this.organization.toOrganizationResponse());
+
         response.setProfileUrl(this.profileUrl);
         response.setLastAccessedAt(this.lastAccessedAt);
         return response;
@@ -67,6 +68,10 @@ public class Teacher {
 
     public void updatePassword(String newPassword, PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(newPassword);
+    }
+
+    public void updateProfileUrl(String updateProfileUrl) {
+        this.profileUrl = updateProfileUrl;
     }
 
 }

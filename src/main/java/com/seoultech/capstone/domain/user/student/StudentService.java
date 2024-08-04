@@ -1,7 +1,9 @@
 package com.seoultech.capstone.domain.user.student;
 
+import com.seoultech.capstone.common.utils.SecurityUtils;
 import com.seoultech.capstone.domain.auth.Enum.UserRole;
 import com.seoultech.capstone.domain.auth.dto.LoginResponse;
+import com.seoultech.capstone.domain.user.common.dto.ProfilePictureUpdateRequest;
 import com.seoultech.capstone.domain.user.student.dto.*;
 import com.seoultech.capstone.domain.auth.jwt.TokenProvider;
 import com.seoultech.capstone.domain.auth.jwt.TokenResponse;
@@ -83,6 +85,8 @@ public class StudentService {
     }
 
     public void resetPassword(PasswordResetRequest passwordResetRequest) {
+        SecurityUtils.checkCurrentUser(passwordResetRequest.getUserId());
+
         Student student = studentRepository.findById(passwordResetRequest.getUserId())
                 .orElseThrow(() -> new CustomException(UNAUTHORIZED_INFO, "No such student with id " +passwordResetRequest.getUserId() ));
 
@@ -93,5 +97,16 @@ public class StudentService {
         else {
             throw new CustomException(UNAUTHORIZED_INFO, "Old password not match");
         }
+    }
+
+    @Transactional
+    public void updateProfilePicture(ProfilePictureUpdateRequest profilePictureUpdateRequest) {
+        SecurityUtils.checkCurrentUser(profilePictureUpdateRequest.getUserId());
+
+        Student student = studentRepository.findById(profilePictureUpdateRequest.getUserId())
+                .orElseThrow(() -> new CustomException(ENTITY_NOT_FOUND, "Student not found"));
+
+        student.updateProfileUrl(profilePictureUpdateRequest.getProfilePictureUrl());
+        studentRepository.save(student);
     }
 }

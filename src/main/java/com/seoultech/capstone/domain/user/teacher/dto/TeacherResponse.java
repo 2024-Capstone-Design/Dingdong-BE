@@ -1,6 +1,5 @@
 package com.seoultech.capstone.domain.user.teacher.dto;
 
-import com.seoultech.capstone.domain.organization.Organization;
 import com.seoultech.capstone.domain.organization.OrganizationResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -8,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class TeacherSignupResponse {
+public class TeacherResponse {
 
     @Schema(description = "교사 ID", example = "1")
     private int id;
@@ -22,7 +21,7 @@ public class TeacherSignupResponse {
     @Schema(description = "조직 정보", example = "홍길동")
     private OrganizationResponse organizationResponse;
 
-    public TeacherSignupResponse(int id, String email, String name, OrganizationResponse organizationResponse) {
+    public TeacherResponse(int id, String email, String name, OrganizationResponse organizationResponse) {
         this.id = id;
         this.email = email;
         this.name = name;

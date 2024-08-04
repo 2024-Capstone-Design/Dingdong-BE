@@ -57,7 +57,7 @@ public class StudentTaskService {
                     .collect(Collectors.toList());
         }
 
-        Comparator<StudentTask> comparator = Comparator.comparing(StudentTask::getCompletionDate, Comparator.nullsLast(LocalDateTime::compareTo));
+        Comparator<StudentTask> comparator = Comparator.comparing(StudentTask::getDueDate, Comparator.nullsLast(LocalDateTime::compareTo));
         if ("progress".equalsIgnoreCase(sortBy)) {
             comparator = Comparator.comparing(StudentTask::getProgress, Comparator.comparingInt(this::getProgressOrder));
         }
@@ -70,11 +70,11 @@ public class StudentTaskService {
 
     private int getProgressOrder(Progress progress) {
         switch (progress) {
-            case NOT_STARTED: return 1;
-            case CHAT: return 2;
+            case NOT_STARTED: return 5;
+            case CHAT: return 4;
             case SKETCH: return 3;
-            case CODING: return 4;
-            case COMPLETED: return 5;
+            case CODING: return 2;
+            case COMPLETED: return 1;
             default: throw new CustomException(ErrorStatus.ENTITY_NOT_FOUND, "Unknown progress: " + progress);
         }
     }
@@ -86,6 +86,7 @@ public class StudentTaskService {
 
     private StudentTaskProgressResponse createStudentTaskResponse(StudentTask studentTask, Task task) {
         return StudentTaskProgressResponse.studentTaskProgressResponseBuilder()
+                .studentTaskId(studentTask.getId())
                 .taskId(task.getId())
                 .taskTitle(task.getTitle())
                 .taskSummary(task.getSummary())

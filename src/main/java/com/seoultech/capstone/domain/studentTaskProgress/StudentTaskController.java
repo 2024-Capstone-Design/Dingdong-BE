@@ -39,7 +39,7 @@ public class StudentTaskController {
         return ApiResponseDTO.success(SuccessStatus.STUDENT_TASK_PROGRESS_ADD_SUCCESS, response);
     }
 
-    @Operation(summary = "학생별 진행중 과제 조회", description = "학생 ID로 진행중인/완료된 모든 과제를 조회합니다.")
+    @Operation(summary = "학생별 과제 조회", description = "학생 ID로 진행중인/완료된 모든 과제를 조회합니다.")
     @ApiResponse(responseCode = "200", description = "학생별 진행중 과제 조회 성공", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     @GetMapping("/student/{studentId}")
     public ResponseEntity<ApiResponseDTO<ListWrapper<StudentTaskProgressResponse>>> getProgressedTasksByStudentId(
@@ -63,9 +63,9 @@ public class StudentTaskController {
     @Operation(
             summary = "학생 과제 진행 상태 업데이트", description = "studentTaskId로 학생의 과제 진행 상태를 업데이트합니다.")
     @ApiResponse(responseCode = "200", description = "학생 과제 진행 상태 업데이트 성공", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
-    @PatchMapping("/{id}/progress")
-    public ResponseEntity<ApiResponseDTO<StudentTaskProgressResponse>> updateProgress(@PathVariable Integer id, @RequestBody @Valid StudentTaskProgressUpdateRequest request) {
-        StudentTaskProgressResponse response = studentTaskService.updateProgress(id, request.getProgress());
+    @PatchMapping("/{studentTaskId}/progress")
+    public ResponseEntity<ApiResponseDTO<StudentTaskProgressResponse>> updateProgress(@PathVariable Integer studentTaskId, @RequestBody @Valid StudentTaskProgressUpdateRequest request) {
+        StudentTaskProgressResponse response = studentTaskService.updateProgress(studentTaskId, request.getProgress());
         return ApiResponseDTO.success(SuccessStatus.STUDENT_TASK_PROGRESS_UPDATE_SUCCESS, response);
     }
 }
